@@ -1,0 +1,40 @@
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Build Rojo
+build/
+*.rbxl
+*.rbxlx
+*.rbxm
+*.rbxmx
+sourcemap.json
+
+# Wally
+Packages/
+ServerPackages/
+DevPackages/
+wally.lock
+
+# Rokit / outils
+.rokit/
+.aftman/
+
+# Python (tools/)
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Rapports générés
+reports/
+
+# Claude Code local
+.claude/settings.local.json
+
+# OS / éditeurs
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
