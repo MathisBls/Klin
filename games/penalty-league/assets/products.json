@@ -1,0 +1,22 @@
+{
+  "$comment": "Catalogue de monetisation de penalty-league. La cle est le nom stable utilise dans le code Luau ; 'name' est ce que voit le joueur et peut changer sans casser le code.",
+  "developerProducts": {
+    "PACK_GOLD": {
+      "name": "Pochette Or",
+      "description": "3 cartes, dont au moins une carte Or.",
+      "price": 49
+    },
+    "CREDITS_LARGE": {
+      "name": "3 000 credits",
+      "description": "De quoi ouvrir douze pochettes.",
+      "price": 79
+    }
+  },
+  "gamePasses": {
+    "SEASON_PASS": {
+      "name": "Pass Saison",
+      "description": "+50 % de credits sur tous les gains, pour toujours.",
+      "price": 199
+    }
+  }
+}

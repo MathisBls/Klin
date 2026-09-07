@@ -1,0 +1,21 @@
+{
+  "developerProducts": {
+    "CREDITS_LARGE": {
+      "name": "3 000 credits",
+      "price": 79,
+      "productId": 3711762200
+    },
+    "PACK_GOLD": {
+      "name": "Pochette Or",
+      "price": 49,
+      "productId": 3711762203
+    }
+  },
+  "gamePasses": {
+    "SEASON_PASS": {
+      "gamePassId": 1969755436,
+      "name": "Pass Saison",
+      "price": 199
+    }
+  }
+}

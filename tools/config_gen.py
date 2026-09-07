@@ -112,4 +112,8 @@ def generate(game: Path) -> Path:
 
 
 if __name__ == "__main__":
-    generate(common.resolve_game())
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Regenere Config.luau.")
+    common.add_game_arg(parser)
+    generate(common.resolve_game(parser.parse_args().game))

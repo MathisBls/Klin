@@ -1,0 +1,46 @@
+{
+  "name": "penalty-league",
+  "tree": {
+    "$className": "DataModel",
+    "ReplicatedStorage": {
+      "$className": "ReplicatedStorage",
+      "Shared": { "$path": "src/shared" },
+      "Packages": { "$path": { "optional": "../../Packages" } }
+    },
+    "ServerScriptService": {
+      "$className": "ServerScriptService",
+      "Server": { "$path": "src/server" },
+      "ServerPackages": { "$path": { "optional": "../../ServerPackages" } }
+    },
+    "StarterPlayer": {
+      "$className": "StarterPlayer",
+      "StarterPlayerScripts": {
+        "$className": "StarterPlayerScripts",
+        "Client": { "$path": "src/client" }
+      }
+    },
+    "Workspace": {
+      "$className": "Workspace",
+      "$properties": { "FilteringEnabled": true },
+      "Generated": { "$path": "src/workspace" }
+    },
+    "Lighting": {
+      "$className": "Lighting",
+      "$properties": {
+        "Ambient": [0.16, 0.17, 0.2],
+        "OutdoorAmbient": [0.22, 0.24, 0.28],
+        "Brightness": 2,
+        "ClockTime": 20,
+        "FogColor": [0.05, 0.06, 0.09],
+        "FogEnd": 400,
+        "FogStart": 120,
+        "GlobalShadows": true,
+        "EnvironmentDiffuseScale": 0.4
+      }
+    },
+    "SoundService": {
+      "$className": "SoundService",
+      "$properties": { "RespectFilteringEnabled": true }
+    }
+  }
+}
