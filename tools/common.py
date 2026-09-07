@@ -357,6 +357,59 @@ class OpenCloud:
 # Utilitaires partages
 # --------------------------------------------------------------------------
 
+GAMES_DIR = ROOT / "games"
+
+
+def list_games() -> list[str]:
+    """Slugs des jeux du repo : un dossier games/<slug>/default.project.json."""
+    if not GAMES_DIR.is_dir():
+        return []
+    return sorted(
+        entry.name
+        for entry in GAMES_DIR.iterdir()
+        if entry.is_dir() and (entry / "default.project.json").is_file()
+    )
+
+
+def resolve_game(slug: str | None = None) -> Path:
+    """Renvoie le dossier du jeu actif.
+
+    Ordre : --game, puis KLIN_GAME, puis l'unique jeu du repo. On refuse de
+    deviner des qu'il y en a plusieurs : publier le mauvais jeu sur une place
+    est une erreur qu'on ne rattrape pas d'un `git revert`.
+    """
+    available = list_games()
+    if not available:
+        fail("aucun jeu dans games/ (il faut un games/<slug>/default.project.json)")
+
+    chosen = slug or os.environ.get("KLIN_GAME")
+
+    if chosen:
+        if chosen not in available:
+            fail(
+                f"jeu inconnu : {chosen}\n"
+                f"       -> disponibles : {', '.join(available)}"
+            )
+        return GAMES_DIR / chosen
+
+    if len(available) == 1:
+        return GAMES_DIR / available[0]
+
+    fail(
+        "plusieurs jeux dans le repo, il faut choisir :\n"
+        + "\n".join(f"       --game {name}" for name in available)
+    )
+    raise AssertionError("unreachable")
+
+
+def add_game_arg(parser) -> None:
+    """Argument --game, commun aux scripts qui touchent a un jeu precis."""
+    parser.add_argument(
+        "--game",
+        help="slug du jeu dans games/ (defaut : KLIN_GAME, ou l'unique jeu)",
+    )
+
+
 def find_tool(name: str) -> str | None:
     """Localise un binaire de la toolchain.
 

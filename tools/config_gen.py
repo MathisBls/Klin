@@ -17,9 +17,16 @@ from pathlib import Path
 
 import common
 
-ASSETS_LOCK = common.ROOT / "assets" / "assets.lock.json"
-PRODUCTS_LOCK = common.ROOT / "assets" / "products.lock.json"
-CONFIG_FILE = common.ROOT / "src" / "shared" / "Config.luau"
+def assets_lock(game: Path) -> Path:
+    return game / "assets" / "assets.lock.json"
+
+
+def products_lock(game: Path) -> Path:
+    return game / "assets" / "products.lock.json"
+
+
+def config_file(game: Path) -> Path:
+    return game / "src" / "shared" / "Config.luau"
 
 HEADER = """--!strict
 --[[
@@ -51,28 +58,28 @@ def _render_table(name: str, entries: dict[str, str], comment: str) -> str:
     return "\n".join(lines) + "\n"
 
 
-def generate() -> Path:
+def generate(game: Path) -> Path:
     """Reconstruit Config.luau. Retourne le chemin ecrit."""
-    assets_lock: dict = common.read_json(ASSETS_LOCK, default={}) or {}
-    products_lock: dict = common.read_json(PRODUCTS_LOCK, default={}) or {}
+    locks = common.read_json(assets_lock(game), default={}) or {}
+    products = common.read_json(products_lock(game), default={}) or {}
 
     # Les assets sont exposes comme des chaines rbxassetid:// directement
     # utilisables (Image, Sound.SoundId...), pas comme des nombres nus.
     assets = {
         key: f'"rbxassetid://{entry["assetId"]}"'
-        for key, entry in sorted(assets_lock.items())
+        for key, entry in sorted(locks.items())
         if entry.get("assetId")
     }
 
     # Les produits sont des nombres : MarketplaceService les veut ainsi.
-    products = {
+    product_ids = {
         key: str(entry["productId"])
-        for key, entry in sorted(products_lock.get("developerProducts", {}).items())
+        for key, entry in sorted(products.get("developerProducts", {}).items())
         if entry.get("productId")
     }
     passes = {
         key: str(entry["gamePassId"])
-        for key, entry in sorted(products_lock.get("gamePasses", {}).items())
+        for key, entry in sorted(products.get("gamePasses", {}).items())
         if entry.get("gamePassId")
     }
 
@@ -85,23 +92,24 @@ def generate() -> Path:
         "}\n\n"
         "local Config: Config = {\n"
         + _render_table("assets", assets, "cle logique -> rbxassetid://")
-        + _render_table("developerProducts", products, "cle logique -> productId")
+        + _render_table("developerProducts", product_ids, "cle logique -> productId")
         + _render_table("gamePasses", passes, "cle logique -> gamePassId")
         + "}\n\nreturn table.freeze(Config)\n"
     )
 
-    CONFIG_FILE.parent.mkdir(parents=True, exist_ok=True)
+    target = config_file(game)
+    target.parent.mkdir(parents=True, exist_ok=True)
     # newline explicite : sur Windows, Python traduirait les sauts de ligne
     # en CRLF, que stylua.toml (line_endings = "Unix") rejette au make lint.
-    with CONFIG_FILE.open("w", encoding="utf-8", newline="\n") as handle:
+    with target.open("w", encoding="utf-8", newline="\n") as handle:
         handle.write(body)
 
     common.ok(
         f"Config.luau regenere : {len(assets)} asset(s), "
-        f"{len(products)} produit(s), {len(passes)} game pass(es)"
+        f"{len(product_ids)} produit(s), {len(passes)} game pass(es)"
     )
-    return CONFIG_FILE
+    return target
 
 
 if __name__ == "__main__":
-    generate()
+    generate(common.resolve_game())

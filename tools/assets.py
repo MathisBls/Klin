@@ -30,8 +30,7 @@ from typing import Any
 import common
 import config_gen
 
-MANIFEST = common.ROOT / "assets" / "manifest.json"
-LOCK = config_gen.ASSETS_LOCK
+# Chemins resolus par jeu : chaque games/<slug>/ a son manifest et son lock.
 
 # assetType Roblox -> extensions acceptees et type MIME a envoyer.
 ASSET_TYPES: dict[str, tuple[tuple[str, ...], str]] = {
@@ -54,11 +53,16 @@ def file_digest(path: Path) -> str:
     return digest.hexdigest()
 
 
-def load_manifest() -> list[dict[str, Any]]:
-    """Lit et valide le manifest. Echoue tot sur une entree mal formee."""
-    data = common.read_json(MANIFEST)
+def load_manifest(manifest: Path, game: Path) -> list[dict[str, Any]]:
+    """Lit et valide le manifest. Echoue tot sur une entree mal formee.
+
+    Les chemins 'file' sont relatifs au dossier du jeu, pas a la racine du
+    repo : un jeu doit pouvoir etre deplace ou copie sans reecrire son
+    manifest.
+    """
+    data = common.read_json(manifest)
     if data is None:
-        common.fail(f"{MANIFEST.relative_to(common.ROOT)} introuvable")
+        common.fail(f"{manifest.relative_to(common.ROOT)} introuvable")
 
     entries = data.get("assets", [])
     if not isinstance(entries, list):
@@ -83,7 +87,7 @@ def load_manifest() -> list[dict[str, Any]]:
                     f"asset '{key}' : type '{asset_type}' inconnu. "
                     f"Valeurs acceptees : {', '.join(sorted(ASSET_TYPES))}"
                 )
-            path = common.ROOT / entry["file"]
+            path = game / entry["file"]
             if not path.is_file():
                 common.fail(f"asset '{key}' : fichier introuvable -> {entry['file']}")
             extensions, _ = ASSET_TYPES[asset_type]
@@ -97,11 +101,11 @@ def load_manifest() -> list[dict[str, Any]]:
 
 
 def upload(
-    api: common.OpenCloud, cfg: common.Config, entry: dict[str, Any]
+    api: common.OpenCloud, cfg: common.Config, game: Path, entry: dict[str, Any]
 ) -> int | None:
     """Uploade un fichier et attend l'ID final. None en dry-run."""
     key = entry["key"]
-    path = common.ROOT / entry["file"]
+    path = game / entry["file"]
     asset_type = entry["type"]
     _, mime = ASSET_TYPES[asset_type]
 
@@ -151,15 +155,22 @@ def main() -> int:
         action="store_true",
         help="re-uploade meme si le fichier n'a pas change",
     )
+    common.add_game_arg(parser)
     common.add_common_args(parser)
     args = parser.parse_args()
 
-    entries = load_manifest()
-    lock: dict[str, dict[str, Any]] = common.read_json(LOCK, default={}) or {}
+    game = common.resolve_game(args.game)
+    common.info(f"jeu : {game.name}")
+
+    manifest = game / "assets" / "manifest.json"
+    lock_path = config_gen.assets_lock(game)
+
+    entries = load_manifest(manifest, game)
+    lock: dict[str, dict[str, Any]] = common.read_json(lock_path, default={}) or {}
 
     if not entries:
         common.info("manifest vide, rien a resoudre")
-        config_gen.generate()
+        config_gen.generate(game)
         common.emit({"resolved": 0, "uploaded": 0}, args.as_json)
         return 0
 
@@ -179,7 +190,7 @@ def main() -> int:
             continue
 
         # Cas 2 : fichier local. On compare l'empreinte avec le lock.
-        path = common.ROOT / entry["file"]
+        path = game / entry["file"]
         digest = file_digest(path)
         previous = lock.get(key, {})
 
@@ -192,7 +203,7 @@ def main() -> int:
             common.info(f"{key} -> {previous['assetId']} (inchange, upload evite)")
             continue
 
-        asset_id = upload(api, cfg, entry)
+        asset_id = upload(api, cfg, game, entry)
         if asset_id is None:  # dry-run
             resolved[key] = previous or {"assetId": 0, "sha256": digest}
             continue
@@ -210,8 +221,8 @@ def main() -> int:
         common.emit({"dryRun": True, "resolved": len(resolved)}, args.as_json)
         return 0
 
-    common.write_json(LOCK, resolved)
-    config_gen.generate()
+    common.write_json(lock_path, resolved)
+    config_gen.generate(game)
 
     common.ok(f"{len(resolved)} asset(s) resolu(s), dont {uploaded} uploade(s)")
     common.emit(

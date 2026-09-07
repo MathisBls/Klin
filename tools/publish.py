@@ -26,11 +26,12 @@ from pathlib import Path
 
 import common
 
-DEFAULT_OUTPUT = common.ROOT / "build" / "game.rbxl"
-PROJECT_FILE = common.ROOT / "default.project.json"
+def build_output(game: Path) -> Path:
+    """Chaque jeu a son propre .rbxl, pour ne pas publier celui d'un autre."""
+    return common.ROOT / "build" / f"{game.name}.rbxl"
 
 
-def run_rojo_build(output: Path) -> None:
+def run_rojo_build(game: Path, output: Path) -> None:
     """Construit le .rbxl. Echoue proprement si rojo n'est pas installe."""
     rojo = common.find_tool("rojo")
     if rojo is None:
@@ -40,8 +41,12 @@ def run_rojo_build(output: Path) -> None:
             "       -> si rokit manque : winget install Rojo.Rokit"
         )
 
+    project = game / "default.project.json"
+    if not project.is_file():
+        common.fail(f"{project} introuvable")
+
     output.parent.mkdir(parents=True, exist_ok=True)
-    command = [rojo, "build", str(PROJECT_FILE), "-o", str(output)]
+    command = [rojo, "build", str(project), "-o", str(output)]
     common.info(" ".join(command))
 
     result = subprocess.run(command, cwd=common.ROOT, capture_output=True, text=True)
@@ -96,14 +101,14 @@ def main() -> int:
         action="store_true",
         help="ne relance pas rojo, reutilise le fichier existant",
     )
-    parser.add_argument(
-        "--output",
-        type=Path,
-        default=DEFAULT_OUTPUT,
-        help=f"chemin du .rbxl (defaut : {DEFAULT_OUTPUT.relative_to(common.ROOT)})",
-    )
+    parser.add_argument("--output", type=Path, help="chemin du .rbxl")
+    common.add_game_arg(parser)
     common.add_common_args(parser)
     args = parser.parse_args()
+
+    game = common.resolve_game(args.game)
+    args.output = args.output or build_output(game)
+    common.info(f"jeu : {game.name}")
 
     cfg = common.load_config(
         require=("ROBLOX_API_KEY", "ROBLOX_UNIVERSE_ID", "ROBLOX_PLACE_ID")
@@ -114,7 +119,7 @@ def main() -> int:
             common.fail(f"--no-build mais {args.output} n'existe pas")
         common.info(f"build ignore, reutilisation de {args.output.name}")
     else:
-        run_rojo_build(args.output)
+        run_rojo_build(game, args.output)
 
     api = common.OpenCloud(cfg, dry_run=args.dry_run)
     response = upload_version(api, cfg, args.output, args.live)

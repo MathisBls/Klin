@@ -1,5 +1,5 @@
 {
-  "name": "Klin",
+  "name": "forge-clicker",
   "tree": {
     "$className": "DataModel",
     "ReplicatedStorage": {
@@ -9,7 +9,7 @@
       },
       "Packages": {
         "$path": {
-          "optional": "Packages"
+          "optional": "../../Packages"
         }
       }
     },
@@ -20,7 +20,7 @@
       },
       "ServerPackages": {
         "$path": {
-          "optional": "ServerPackages"
+          "optional": "../../ServerPackages"
         }
       }
     },

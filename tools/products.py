@@ -19,13 +19,13 @@ Usage :
 from __future__ import annotations
 
 import argparse
+from pathlib import Path
 from typing import Any
 
 import common
 import config_gen
 
-CATALOG = common.ROOT / "assets" / "products.json"
-LOCK = config_gen.PRODUCTS_LOCK
+# Chemins resolus par jeu : chaque games/<slug>/ a son catalogue et son lock.
 
 # Les deux familles ne different que par leurs chemins et le nom de leur ID.
 FAMILIES: dict[str, dict[str, str]] = {
@@ -47,9 +47,9 @@ FAMILIES: dict[str, dict[str, str]] = {
 }
 
 
-def load_catalog() -> dict[str, dict[str, Any]]:
+def load_catalog(catalog: Path) -> dict[str, dict[str, Any]]:
     """Lit et valide assets/products.json."""
-    data = common.read_json(CATALOG, default={"developerProducts": {}, "gamePasses": {}})
+    data = common.read_json(catalog, default={"developerProducts": {}, "gamePasses": {}})
 
     for family in FAMILIES:
         entries = data.get(family, {})
@@ -238,19 +238,24 @@ def main() -> int:
     parser = argparse.ArgumentParser(
         description="Synchronise les Developer Products et Game Passes."
     )
+    common.add_game_arg(parser)
     common.add_common_args(parser)
     args = parser.parse_args()
 
-    catalog = load_catalog()
+    game = common.resolve_game(args.game)
+    common.info(f"jeu : {game.name}")
+
+    catalog = load_catalog(game / "assets" / "products.json")
     if not any(catalog.get(family) for family in FAMILIES):
         common.info("aucun produit declare dans assets/products.json")
-        config_gen.generate()
+        config_gen.generate(game)
         common.emit({"created": 0, "updated": 0}, args.as_json)
         return 0
 
     cfg = common.load_config(require=("ROBLOX_API_KEY", "ROBLOX_UNIVERSE_ID"))
     api = common.OpenCloud(cfg, dry_run=args.dry_run)
-    lock: dict[str, Any] = common.read_json(LOCK, default={}) or {}
+    lock_path = config_gen.products_lock(game)
+    lock: dict[str, Any] = common.read_json(lock_path, default={}) or {}
 
     result: dict[str, Any] = {}
     total_created = total_updated = 0
@@ -270,8 +275,8 @@ def main() -> int:
         common.emit({"dryRun": True}, args.as_json)
         return 0
 
-    common.write_json(LOCK, result)
-    config_gen.generate()
+    common.write_json(lock_path, result)
+    config_gen.generate(game)
 
     common.ok(f"{total_created} cree(s), {total_updated} mis a jour")
     common.emit(

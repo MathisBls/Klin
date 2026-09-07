@@ -2,7 +2,12 @@
 # Sur Windows sans make : `python tools/klin.py <cible>` fait la meme chose.
 
 PYTHON ?= python
-BUILD  := build/game.rbxl
+
+# Jeu actif. `make GAME=<slug> <cible>`, ou export KLIN_GAME=<slug>.
+# Sans valeur, les outils prennent l'unique jeu du repo et refusent de
+# deviner des qu'il y en a plusieurs.
+GAME ?=
+G := $(if $(GAME),--game $(GAME),)
 
 .DEFAULT_GOAL := help
 .PHONY: help install doctor fmt fmt-check lint build test \
@@ -24,42 +29,44 @@ doctor: ## Verifie la cle Open Cloud et ses scopes (lecture seule)
 # --- Qualite --------------------------------------------------------------
 
 fmt: ## Formate le Luau avec StyLua
-	stylua src tests
+	stylua games skills
 
 fmt-check: ## Echoue si le formatage n'est pas a jour
-	stylua --check src tests
+	stylua --check games
 
 lint: fmt-check ## StyLua + Selene
-	selene src tests
+	selene games
 
 # --- Build et tests -------------------------------------------------------
 
-build: ## Construit build/game.rbxl
-	@mkdir -p build
-	rojo build default.project.json -o $(BUILD)
+build: ## Construit build/<slug>.rbxl
+	@$(PYTHON) tools/publish.py $(G) --dry-run
 
 test: ## Publie une version Saved et y execute la suite de tests
-	@$(PYTHON) tools/test.py
+	@$(PYTHON) tools/test.py $(G)
+
+wheel: ## Regenere l'image de la roue depuis GameConfig
+	@$(PYTHON) tools/gen_wheel.py $(G)
 
 # --- Pipeline Open Cloud --------------------------------------------------
 
 assets: ## Resout assets/manifest.json et injecte les IDs dans la config
-	@$(PYTHON) tools/assets.py
+	@$(PYTHON) tools/assets.py $(G)
 
 products: ## Cree/met a jour les Developer Products et Game Passes
-	@$(PYTHON) tools/products.py
+	@$(PYTHON) tools/products.py $(G)
 
-publish: build ## Envoie une version Saved (non live) sur la place
-	@$(PYTHON) tools/publish.py --no-build
+publish: ## Envoie une version Saved (non live) sur la place
+	@$(PYTHON) tools/publish.py $(G)
 
-publish-live: build ## Envoie une version Published (visible par les joueurs)
-	@$(PYTHON) tools/publish.py --no-build --live
+publish-live: ## Envoie une version Published (visible par les joueurs)
+	@$(PYTHON) tools/publish.py $(G) --live
 
 reset: ## Supprime une sauvegarde (ex: make reset USER=Asukyy). DEFINITIF.
-	@$(PYTHON) tools/reset_profile.py --username $(USER)
+	@$(PYTHON) tools/reset_profile.py $(G) --username $(USER)
 
 analytics: ## Ecrit reports/$(SLUG).md (ex: make analytics SLUG=coin-clicker)
-	@$(PYTHON) tools/analytics.py $(if $(SLUG),--slug $(SLUG),)
+	@$(PYTHON) tools/analytics.py $(G) $(if $(SLUG),--slug $(SLUG),)
 
 # --- Generation de jeu (pas encore implemente) ----------------------------
 

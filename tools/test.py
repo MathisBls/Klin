@@ -31,20 +31,20 @@ from typing import Any
 import common
 import publish
 
-DEFAULT_SCRIPT = common.ROOT / "tests" / "run.server.luau"
+# Le script de tests vit dans le dossier du jeu : games/<slug>/tests/.
 
 # Etats terminaux renvoyes par l'API.
 DONE_STATES = {"COMPLETE", "FAILED", "CANCELLED"}
 
 
-def publish_test_version(cfg: common.Config, output: Path) -> int:
+def publish_test_version(cfg: common.Config, game: Path, output: Path) -> int:
     """Publie une version Saved et renvoie son numero.
 
     Toujours Saved : une execution de tests ne doit jamais toucher a ce que
     voient les joueurs.
     """
     api = common.OpenCloud(cfg)
-    publish.run_rojo_build(output)
+    publish.run_rojo_build(game, output)
     response = publish.upload_version(api, cfg, output, live=False)
 
     version = response.get("versionNumber")
@@ -119,25 +119,22 @@ def main() -> int:
     parser = argparse.ArgumentParser(
         description="Execute tests/run.server.luau dans un serveur Roblox reel."
     )
-    parser.add_argument(
-        "--script",
-        type=Path,
-        default=DEFAULT_SCRIPT,
-        help=f"script a executer (defaut : {DEFAULT_SCRIPT.name})",
-    )
+    parser.add_argument("--script", type=Path, help="script Luau a executer")
     parser.add_argument(
         "--version",
         type=int,
         help="rejouer sur une version deja publiee, sans rebuild ni upload",
     )
-    parser.add_argument(
-        "--output",
-        type=Path,
-        default=publish.DEFAULT_OUTPUT,
-        help="chemin du .rbxl intermediaire",
-    )
+    parser.add_argument("--output", type=Path, help="chemin du .rbxl intermediaire")
+    common.add_game_arg(parser)
     common.add_common_args(parser)
     args = parser.parse_args()
+
+    game = common.resolve_game(args.game)
+    common.info(f"jeu : {game.name}")
+
+    args.script = args.script or game / "tests" / "run.server.luau"
+    args.output = args.output or publish.build_output(game)
 
     if not args.script.is_file():
         common.fail(f"script introuvable : {args.script}")
@@ -151,7 +148,7 @@ def main() -> int:
         common.emit({"dryRun": True}, args.as_json)
         return 0
 
-    version = args.version or publish_test_version(cfg, args.output)
+    version = args.version or publish_test_version(cfg, game, args.output)
 
     api = common.OpenCloud(cfg)
     source = args.script.read_text(encoding="utf-8")

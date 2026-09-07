@@ -32,6 +32,7 @@ from __future__ import annotations
 import argparse
 import json
 import urllib.error
+from pathlib import Path
 import urllib.request
 
 import common
@@ -87,13 +88,13 @@ def resolve_username(username: str) -> int:
     return int(found["id"])
 
 
-def verify_store_name() -> None:
+def verify_store_name(game: Path) -> None:
     """Compare STORE_NAME au nom reellement utilise par le jeu.
 
     Une divergence ferait vider un store vide en annoncant un succes, ce qui
     est pire qu'une erreur : on croirait la sauvegarde remise a zero.
     """
-    source = common.ROOT / "src" / "server" / "systems" / "Save.luau"
+    source = game / "src" / "server" / "systems" / "Save.luau"
     if not source.is_file():
         common.warn("Save.luau introuvable, nom de store non verifie")
         return
@@ -125,10 +126,12 @@ def main() -> int:
         type=int,
         help="version de la place a utiliser (defaut : publie une version Saved)",
     )
+    common.add_game_arg(parser)
     common.add_common_args(parser)
     args = parser.parse_args()
 
-    verify_store_name()
+    game = common.resolve_game(args.game)
+    verify_store_name(game)
 
     cfg = common.load_config(
         require=("ROBLOX_API_KEY", "ROBLOX_UNIVERSE_ID", "ROBLOX_PLACE_ID")
@@ -149,7 +152,7 @@ def main() -> int:
 
     script = RESET_SCRIPT.format(store_name=STORE_NAME, user_id=user_id)
     version = args.version or test_runner.publish_test_version(
-        cfg, common.ROOT / "build" / "game.rbxl"
+        cfg, game, common.ROOT / "build" / f"{game.name}.rbxl"
     )
 
     api = common.OpenCloud(cfg)

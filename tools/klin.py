@@ -32,18 +32,22 @@ TARGETS: dict[str, tuple[str, list[list[str]]]] = {
         "Verifie la cle Open Cloud et ses scopes (lecture seule)",
         [PY + ["tools/doctor.py"]],
     ),
-    "fmt": ("Formate le Luau avec StyLua", [["stylua", "src", "tests"]]),
+    "fmt": ("Formate le Luau avec StyLua", [["stylua", "games"]]),
     "fmt-check": (
         "Echoue si le formatage n'est pas a jour",
-        [["stylua", "--check", "src", "tests"]],
+        [["stylua", "--check", "games"]],
     ),
     "lint": (
         "StyLua + Selene",
-        [["stylua", "--check", "src", "tests"], ["selene", "src", "tests"]],
+        [["stylua", "--check", "games"], ["selene", "games"]],
     ),
     "build": (
-        "Construit build/game.rbxl",
-        [["rojo", "build", "default.project.json", "-o", str(BUILD)]],
+        "Construit build/<slug>.rbxl",
+        [PY + ["tools/publish.py", "--dry-run"]],
+    ),
+    "wheel": (
+        "Regenere l'image de la roue depuis GameConfig",
+        [PY + ["tools/gen_wheel.py"]],
     ),
     "test": (
         "Publie une version Saved et y execute la suite de tests",

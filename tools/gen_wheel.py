@@ -30,8 +30,7 @@ from pathlib import Path
 
 import common
 
-CONFIG = common.ROOT / "src" / "shared" / "config" / "GameConfig.luau"
-OUTPUT = common.ROOT / "assets" / "files" / "wheel.png"
+# Chemins resolus par jeu.
 
 # Cle de lot -> couleur du secteur. Doit rester identique a PRIZE_COLORS dans
 # src/client/ui/WheelUI.luau, qui colore la legende : deux palettes
@@ -54,16 +53,16 @@ RIM_RATIO = 0.032
 SUPERSAMPLE = 3
 
 
-def read_prizes() -> list[tuple[str, float]]:
+def read_prizes(config: Path) -> list[tuple[str, float]]:
     """Extrait (cle, poids) de GameConfig.luau, dans l'ordre de declaration.
 
     On parse le Luau plutot que de dupliquer les valeurs ici : une copie
     finirait par diverger, et c'est precisement ce que ce script evite.
     """
-    if not CONFIG.is_file():
-        common.fail(f"{CONFIG.relative_to(common.ROOT)} introuvable")
+    if not config.is_file():
+        common.fail(f"{config.relative_to(common.ROOT)} introuvable")
 
-    text = CONFIG.read_text(encoding="utf-8")
+    text = config.read_text(encoding="utf-8")
 
     start = text.find("prizes = {")
     if start == -1:
@@ -213,11 +212,15 @@ def main() -> int:
     parser.add_argument(
         "--size", type=int, default=512, help="cote de l'image (defaut : 512)"
     )
-    parser.add_argument("--output", type=Path, default=OUTPUT)
+    parser.add_argument("--output", type=Path)
+    common.add_game_arg(parser)
     common.add_common_args(parser)
     args = parser.parse_args()
 
-    prizes = read_prizes()
+    game = common.resolve_game(args.game)
+    args.output = args.output or game / "assets" / "files" / "wheel.png"
+
+    prizes = read_prizes(game / "src" / "shared" / "config" / "GameConfig.luau")
     sectors = build_sectors(prizes)
 
     common.info(f"{len(sectors)} secteurs lus dans GameConfig.luau :")
