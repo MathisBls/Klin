@@ -168,8 +168,23 @@ class ApiError(RuntimeError):
         self.url = url
         super().__init__(f"{method} {url} -> HTTP {status}\n{body}")
 
+    @property
+    def is_scope_problem(self) -> bool:
+        """Vrai si Roblox se plaint des permissions.
+
+        Attention : selon l'endpoint, un scope manquant remonte en 401 *ou*
+        en 403. On se fie donc au corps autant qu'au code.
+        """
+        lowered = self.body.lower()
+        return self.status == 403 or "scope" in lowered or "insufficient" in lowered
+
     def explain(self) -> str:
         """Traduit les codes les plus frequents en cause probable."""
+        if self.is_scope_problem:
+            return (
+                "scope manquant sur la cle (ou restriction IP active) - "
+                "verifie les permissions sur le Creator Dashboard"
+            )
         if self.status == 400:
             return "requete refusee : corps ou parametre invalide"
         if self.status == 401:

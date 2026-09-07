@@ -34,6 +34,10 @@ class Check:
     probe: Callable[[common.OpenCloud, common.Config], Any]
     requires: tuple[str, ...] = ()
 
+    # Message affiche quand la sonde passe. Une sonde en lecture ne prouve
+    # jamais que le scope :write est accorde - il faut le dire.
+    on_success: str = "scope accorde"
+
     # Rempli a l'execution
     status: str = field(default="", init=False)
     detail: str = field(default="", init=False)
@@ -91,18 +95,20 @@ CHECKS: list[Check] = [
     ),
     Check(
         key="place",
-        label="Place Management",
-        scope="universe.place:read / :write",
+        label="Place (lecture)",
+        scope="universe-places:read",
         needed_by="make publish",
         probe=_probe_place,
         requires=("ROBLOX_UNIVERSE_ID", "ROBLOX_PLACE_ID"),
+        on_success="lecture OK - :write non verifiable sans publier",
     ),
     Check(
         key="assets",
-        label="Assets",
-        scope="asset:read / :write",
+        label="Assets (lecture)",
+        scope="asset:read",
         needed_by="make assets",
         probe=_probe_assets,
+        on_success="lecture OK - :write non verifiable sans uploader",
     ),
     Check(
         key="products",
@@ -153,9 +159,9 @@ def run_check(check: Check, api: common.OpenCloud, cfg: common.Config) -> None:
     try:
         check.probe(api, cfg)
         check.status = "ok"
-        check.detail = "scope accorde"
+        check.detail = check.on_success
     except common.ApiError as exc:
-        if exc.status == 403:
+        if exc.is_scope_problem:
             check.status = "missing"
             check.detail = exc.explain()
         elif exc.status == 401:
@@ -222,7 +228,13 @@ def main() -> int:
             "ajoute l'univers et coche les permissions ci-dessus."
         )
     else:
-        common.ok("tous les scopes necessaires sont accordes")
+        common.ok("tous les scopes testables en lecture sont accordes")
+        common.warn(
+            "les scopes :write (universe-places:write, asset:write, "
+            "developer-product:write) ne peuvent pas etre verifies sans "
+            "ecrire sur Roblox - coche-les aussi, sinon `make publish` "
+            "echouera en 401 'insufficient scopes'"
+        )
 
     common.emit(
         {
