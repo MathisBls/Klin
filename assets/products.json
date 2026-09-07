@@ -1,0 +1,5 @@
+{
+  "$comment": "Catalogue de monetisation. `make products` cree ou met a jour ces entrees sur Roblox et ecrit leurs IDs dans products.lock.json, puis dans Config.luau. La cle (ex: SMALL_COINS) est le nom stable utilise dans le code Luau ; le champ 'name' est ce que voit le joueur et peut changer sans casser le code.",
+  "developerProducts": {},
+  "gamePasses": {}
+}

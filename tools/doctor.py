@@ -63,6 +63,17 @@ def _probe_assets(api: common.OpenCloud, _cfg: common.Config) -> Any:
     return api.request("GET", "/assets/v1/assets/1")
 
 
+def _probe_luau_execution(api: common.OpenCloud, cfg: common.Config) -> Any:
+    # Meme un GET sur une tache inexistante exige le scope :write. C'est donc
+    # la seule sonde du lot qui valide reellement une permission d'ecriture,
+    # sans rien executer.
+    return api.request(
+        "GET",
+        f"/cloud/v2/universes/{cfg.universe_id}/places/{cfg.place_id}"
+        f"/versions/1/luau-execution-sessions/none/tasks/none",
+    )
+
+
 def _probe_products(api: common.OpenCloud, cfg: common.Config) -> Any:
     return api.request(
         "GET",
@@ -109,6 +120,15 @@ CHECKS: list[Check] = [
         needed_by="make assets",
         probe=_probe_assets,
         on_success="lecture OK - :write non verifiable sans uploader",
+    ),
+    Check(
+        key="luau-execution",
+        label="Luau Execution",
+        scope="universe.place.luau-execution-session:write",
+        needed_by="make test",
+        probe=_probe_luau_execution,
+        requires=("ROBLOX_UNIVERSE_ID", "ROBLOX_PLACE_ID"),
+        on_success="ecriture OK (seul scope :write verifiable a vide)",
     ),
     Check(
         key="products",

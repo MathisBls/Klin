@@ -365,10 +365,11 @@ def read_json(path: Path, default: Any = None) -> Any:
 def write_json(path: Path, data: Any) -> None:
     """Ecrit un JSON stable (trie, indente) pour des diffs git lisibles."""
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(
-        json.dumps(data, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
-        encoding="utf-8",
-    )
+    payload = json.dumps(data, ensure_ascii=False, indent=2, sort_keys=True) + "\n"
+    # newline explicite : sinon Python ecrit du CRLF sur Windows et chaque
+    # machine produit un diff git different pour un contenu identique.
+    with path.open("w", encoding="utf-8", newline="\n") as handle:
+        handle.write(payload)
 
 
 def add_common_args(parser) -> None:

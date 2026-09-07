@@ -1,9 +1,12 @@
 # Toolchain du projet. `rokit install` installe exactement ces versions.
 # Ne jamais mettre a jour une version sans relancer `make lint build`.
+#
+# Pas de run-in-roblox : abandonne depuis juillet 2020, il ne trouve plus
+# Studio et exige une machine avec Studio installe. Les tests passent par
+# la Luau Execution API (tools/test.py), qui tourne aussi en CI.
 
 [tools]
 rojo = "rojo-rbx/rojo@7.7.0"
 wally = "UpliftGames/wally@0.3.2"
 stylua = "JohnnyMorganz/StyLua@2.5.2"
 selene = "Kampfkarren/selene@0.31.0"
-run-in-roblox = "rojo-rbx/run-in-roblox@0.3.0"

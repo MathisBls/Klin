@@ -38,8 +38,8 @@ build: ## Construit build/game.rbxl
 	@mkdir -p build
 	rojo build default.project.json -o $(BUILD)
 
-test: build ## Lance la suite de tests dans run-in-roblox
-	run-in-roblox --place $(BUILD) --script tests/run.server.luau
+test: ## Publie une version Saved et y execute la suite de tests
+	@$(PYTHON) tools/test.py
 
 # --- Pipeline Open Cloud --------------------------------------------------
 

@@ -44,11 +44,8 @@ TARGETS: dict[str, tuple[str, list[list[str]]]] = {
         [["rojo", "build", "default.project.json", "-o", str(BUILD)]],
     ),
     "test": (
-        "Lance la suite de tests dans run-in-roblox",
-        [
-            ["rojo", "build", "default.project.json", "-o", str(BUILD)],
-            ["run-in-roblox", "--place", str(BUILD), "--script", "tests/run.server.luau"],
-        ],
+        "Publie une version Saved et y execute la suite de tests",
+        [PY + ["tools/test.py"]],
     ),
     "assets": (
         "Resout assets/manifest.json et injecte les IDs",

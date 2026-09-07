@@ -91,7 +91,10 @@ def generate() -> Path:
     )
 
     CONFIG_FILE.parent.mkdir(parents=True, exist_ok=True)
-    CONFIG_FILE.write_text(body, encoding="utf-8")
+    # newline explicite : sur Windows, Python traduirait les sauts de ligne
+    # en CRLF, que stylua.toml (line_endings = "Unix") rejette au make lint.
+    with CONFIG_FILE.open("w", encoding="utf-8", newline="\n") as handle:
+        handle.write(body)
 
     common.ok(
         f"Config.luau regenere : {len(assets)} asset(s), "
