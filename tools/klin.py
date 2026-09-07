@@ -64,7 +64,7 @@ TARGETS: dict[str, tuple[str, list[list[str]]]] = {
         [PY + ["tools/publish.py", "--live"]],
     ),
     "analytics": (
-        "Ecrit un rapport de metriques dans reports/",
+        "Ecrit un rapport dans reports/ (klin.py analytics -- --slug <slug>)",
         [PY + ["tools/analytics.py"]],
     ),
     "clean": ("Supprime les artefacts de build", []),

@@ -55,5 +55,83 @@ Temps de session, rétention J1/J7, taux de rejeu, monétisation par joueur. Le 
 - Ne jamais inventer un ID d'asset : soit résolu par l'API, soit demandé
 - Répondre en français, sans emojis
 
+## Stratégie multi-jeux
+
+Le repo ne produit pas un jeu, il produit une série de jeux. Deux forces s'y
+opposent et doivent être tenues ensemble : **varier assez pour apprendre
+quelque chose de neuf**, et **garder assez pour ne pas réapprendre ce qu'on
+sait déjà**.
+
+### 1. Chaque jeu est une vraie variation
+
+Un nouveau jeu doit différer des précédents sur les trois axes suivants :
+
+- **Mécanique principale** : le verbe que le joueur répète. Cliquer, empiler,
+  esquiver, fusionner, courir, deviner, construire.
+- **Thème** : l'univers et sa lecture visuelle immédiate.
+- **Hook des 10 premières secondes** : ce qui se passe à l'écran avant que le
+  joueur ait décidé de rester.
+
+Reprendre la même boucle avec un skin différent est interdit. Un simulateur de
+clic renommé en simulateur de minage n'est pas un nouveau jeu : c'est le même
+jeu, et il n'apprend rien de plus que le précédent.
+
+`games/REGISTRY.md` liste chaque jeu sorti avec sa mécanique, son thème, son
+hook et sa date de sortie. **Le consulter est obligatoire avant d'écrire une
+spec.** Si la mécanique ou le hook envisagé y figure déjà, changer d'idée avant
+d'écrire, pas après.
+
+### 2. Varier ne veut pas dire repartir de zéro
+
+Ce qui a fait ses preuves est conservé et réutilisé tel quel :
+
+- une skill dont le code généré n'a produit aucun bug
+- un onboarding qui a donné une bonne rétention J1
+- un shop qui a converti
+- une roue qui a fait revenir les joueurs
+
+Ces éléments forment la **base commune**. Le jeu suivant hérite de tout ça sans
+discussion, et ne diffère que sur la mécanique, le thème et le hook.
+
+`games/PLAYBOOK.md` tient deux listes : ce qui marche et ce qui a échoué.
+Chaque entrée porte **le chiffre qui la prouve**. « L'onboarding sans texte
+marche bien » n'est pas une entrée de playbook ; « onboarding sans texte,
+rétention J1 de 31 % contre 22 % avec tutoriel » en est une. Une conviction
+sans chiffre reste une hypothèse et se note comme telle.
+
+Le playbook s'applique à chaque nouveau jeu. On ne redébat pas d'un point
+tranché par les chiffres.
+
+### 3. Le rapport analytics alimente la spec suivante
+
+Après publication, `make analytics --slug <slug>` écrit `reports/<slug>.md` :
+rétention J1 et J7, temps de session moyen, taux de rejeu, revenus.
+
+Ce rapport est une **entrée obligatoire** de la spec du jeu suivant. Chaque
+`spec.md` contient une section « Leçons des jeux précédents » qui dit
+explicitement :
+
+- **ce qui est conservé**, et le chiffre qui le justifie
+- **ce qui est abandonné**, et le chiffre qui le condamne
+- **ce que ce jeu fait différemment en conséquence**
+
+Une spec sans cette section est incomplète. Un jeu lancé sans avoir lu le
+rapport du précédent répète ses erreurs.
+
+Tant qu'un jeu a moins de 7 jours, ses chiffres de rétention J7 ne sont pas
+lisibles : le noter dans la section plutôt que d'inventer une conclusion.
+
+### 4. Un signal fort déclenche l'itération
+
+Si un jeu montre une rétention J1 nettement au-dessus des autres, il passe en
+**mode itération** : on améliore celui-là au lieu d'en créer un nouveau.
+
+Créer un jeu de plus quand on en tient un qui marche, c'est abandonner le seul
+actif qui a de la valeur. La série existe pour trouver ce signal, pas pour
+faire du volume.
+
+En mode itération, `REGISTRY.md` marque le jeu comme actif et les entrées de
+`PLAYBOOK.md` issues de ses versions successives priment sur les autres.
+
 ## Premier jeu de validation
 Mini simulator : cliquer pour gagner une monnaie, boutique avec 3 améliorations et 2 Developer Products, roue quotidienne, sauvegarde. Objectif : sortir en un seul prompt, jouable et publié. Pas de joli tant que le pipeline n'est pas prouvé.

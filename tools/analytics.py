@@ -119,12 +119,33 @@ def summarise(values: list[float]) -> dict[str, float | None]:
     }
 
 
+def replay_rate(results: dict[str, Any]) -> float | None:
+    """Taux de rejeu, derive de Visits / DailyActiveUsers.
+
+    Roblox n'expose aucune metrique de rejeu. On la calcule : un joueur unique
+    qui genere 2,4 visites par jour est revenu 1,4 fois. C'est un indicateur
+    derive, pas une mesure - le rapport doit le dire.
+    """
+    visits = (results.get("Visits") or {}).get("summary") or {}
+    users = (results.get("DailyActiveUsers") or {}).get("summary") or {}
+
+    total_visits, total_users = visits.get("total"), users.get("total")
+    if not total_visits or not total_users:
+        return None
+    return round(total_visits / total_users, 2)
+
+
 def render_markdown(
-    cfg: common.Config, start: str, end: str, results: dict[str, Any]
+    cfg: common.Config,
+    start: str,
+    end: str,
+    results: dict[str, Any],
+    slug: str | None = None,
 ) -> str:
     """Construit le rapport Markdown."""
+    title = f"# Rapport analytics - {slug}" if slug else "# Rapport analytics"
     lines = [
-        "# Rapport analytics",
+        title,
         "",
         f"- Univers : `{cfg.universe_id}`",
         f"- Periode : {start[:10]} -> {end[:10]}",
@@ -150,14 +171,33 @@ def render_markdown(
             f"{stats['total']} | {unit} |"
         )
 
+    rate = replay_rate(results)
     lines += [
         "",
-        "## Lecture",
+        "## Taux de rejeu",
         "",
-        "Les trois chiffres qui pilotent le classement Roblox : duree de session,",
-        "retention J1 et J7, revenus par joueur. Une retention J1 sous 25 % veut",
-        "dire que le premier ecran ne donne pas assez a faire dans les 10",
-        "premieres secondes.",
+        "Roblox n'expose aucune metrique de rejeu. Celle-ci est **derivee** de",
+        "`Visits / DailyActiveUsers` : c'est le nombre moyen de sessions par",
+        "joueur unique sur la periode. A lire comme un indicateur, pas comme",
+        "une mesure officielle.",
+        "",
+        f"**{rate} session(s) par joueur**" if rate else "_Pas encore de donnees._",
+        "",
+        "## Lecons a reporter",
+        "",
+        "A recopier dans `games/PLAYBOOK.md` avec le chiffre qui les prouve, et",
+        "dans la section \"Lecons des jeux precedents\" de la spec suivante.",
+        "",
+        "- Ce qui est conserve :",
+        "- Ce qui est abandonne :",
+        "- Ce que le jeu suivant fait differemment :",
+        "",
+        "Reperes (voir `games/PLAYBOOK.md` pour les seuils a jour) : retention J1",
+        "sous 20 % = signal faible, au-dessus de 35 % = signal fort, le jeu passe",
+        "en mode iteration au lieu d'en creer un nouveau.",
+        "",
+        "Un jeu de moins de 7 jours n'a pas de retention J7 lisible : ne pas en",
+        "tirer de conclusion.",
         "",
     ]
     return "\n".join(lines)
@@ -165,6 +205,11 @@ def render_markdown(
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Ecrit un rapport analytics.")
+    parser.add_argument(
+        "--slug",
+        help="slug du jeu : ecrit reports/<slug>.md, nom stable, ecrase a chaque "
+        "run. C'est le fichier que cite la spec du jeu suivant.",
+    )
     parser.add_argument(
         "--days", type=int, default=28, help="profondeur de la periode (defaut : 28)"
     )
@@ -209,19 +254,29 @@ def main() -> int:
             common.info(f"{metric} : {count} point(s)")
         results[metric] = payload
 
-    stamp = dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%d_%H%M")
     REPORTS.mkdir(parents=True, exist_ok=True)
 
-    markdown_path = REPORTS / f"analytics_{stamp}.md"
-    markdown_path.write_text(render_markdown(cfg, start, end, results), encoding="utf-8")
+    # Avec --slug, le rapport porte un nom stable et est ecrase a chaque run :
+    # c'est le fichier que la spec suivante doit citer. Sans slug, on horodate
+    # pour ne pas ecraser un rapport de jeu.
+    if args.slug:
+        stem = args.slug
+    else:
+        stem = "analytics_" + dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%d_%H%M")
 
-    json_path = REPORTS / f"analytics_{stamp}.json"
+    markdown_path = REPORTS / f"{stem}.md"
+    with markdown_path.open("w", encoding="utf-8", newline="\n") as handle:
+        handle.write(render_markdown(cfg, start, end, results, args.slug))
+
+    json_path = REPORTS / f"{stem}.json"
     common.write_json(
         json_path,
         {
+            "slug": args.slug,
             "universeId": cfg.universe_id,
             "startTime": start,
             "endTime": end,
+            "replayRate": replay_rate(results),
             "metrics": {
                 metric: payload.get("summary") or {"error": payload.get("error")}
                 for metric, payload in results.items()

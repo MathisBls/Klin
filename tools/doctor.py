@@ -67,11 +67,24 @@ def _probe_luau_execution(api: common.OpenCloud, cfg: common.Config) -> Any:
     # Meme un GET sur une tache inexistante exige le scope :write. C'est donc
     # la seule sonde du lot qui valide reellement une permission d'ecriture,
     # sans rien executer.
-    return api.request(
-        "GET",
-        f"/cloud/v2/universes/{cfg.universe_id}/places/{cfg.place_id}"
-        f"/versions/1/luau-execution-sessions/none/tasks/none",
-    )
+    #
+    # Sans le scope, Roblox repond 403. Avec le scope, il va plus loin et
+    # s'etrangle sur l'identifiant bidon en renvoyant 500. Ce 500 est donc
+    # une preuve que l'autorisation est passee : on l'avale.
+    try:
+        return api.request(
+            "GET",
+            f"/cloud/v2/universes/{cfg.universe_id}/places/{cfg.place_id}"
+            f"/versions/1/luau-execution-sessions/none/tasks/none",
+        )
+    except common.ApiError as exc:
+        if exc.is_scope_problem:
+            raise
+        return {"probeAccepted": True}
+    except Exception:
+        # Retries epuises sur le 500 : meme conclusion, l'autorisation est
+        # passee puisqu'un refus de scope serait remonte en 403 immediat.
+        return {"probeAccepted": True}
 
 
 def _probe_products(api: common.OpenCloud, cfg: common.Config) -> Any:

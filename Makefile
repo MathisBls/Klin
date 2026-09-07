@@ -55,8 +55,8 @@ publish: build ## Envoie une version Saved (non live) sur la place
 publish-live: build ## Envoie une version Published (visible par les joueurs)
 	@$(PYTHON) tools/publish.py --no-build --live
 
-analytics: ## Ecrit un rapport de metriques dans reports/
-	@$(PYTHON) tools/analytics.py
+analytics: ## Ecrit reports/$(SLUG).md (ex: make analytics SLUG=coin-clicker)
+	@$(PYTHON) tools/analytics.py $(if $(SLUG),--slug $(SLUG),)
 
 # --- Generation de jeu (pas encore implemente) ----------------------------
 
