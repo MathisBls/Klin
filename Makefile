@@ -55,6 +55,9 @@ publish: build ## Envoie une version Saved (non live) sur la place
 publish-live: build ## Envoie une version Published (visible par les joueurs)
 	@$(PYTHON) tools/publish.py --no-build --live
 
+reset: ## Supprime une sauvegarde (ex: make reset USER=Asukyy). DEFINITIF.
+	@$(PYTHON) tools/reset_profile.py --username $(USER)
+
 analytics: ## Ecrit reports/$(SLUG).md (ex: make analytics SLUG=coin-clicker)
 	@$(PYTHON) tools/analytics.py $(if $(SLUG),--slug $(SLUG),)
 

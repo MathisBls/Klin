@@ -65,6 +65,10 @@ TARGETS: dict[str, tuple[str, list[list[str]]]] = {
         "Envoie une version Published (visible par les joueurs)",
         [PY + ["tools/publish.py", "--live"]],
     ),
+    "reset": (
+        "Supprime une sauvegarde (klin.py reset -- --username X). DEFINITIF",
+        [PY + ["tools/reset_profile.py"]],
+    ),
     "analytics": (
         "Ecrit un rapport dans reports/ (klin.py analytics -- --slug <slug>)",
         [PY + ["tools/analytics.py"]],
