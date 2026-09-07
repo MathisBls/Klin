@@ -11,6 +11,14 @@ Ici, tout ID vient d'une recherche reelle et est reverifie avant d'entrer
 dans un manifest. Un ID trouve dans un tutoriel ou devine de tete n'a rien
 a faire dans le repo.
 
+SECURITE : LES SCRIPTS DES MODELES GRATUITS
+
+Un modele gratuit peut contenir des scripts. C'est le vecteur de backdoor le
+plus courant sur Roblox : le modele est joli, et un Script planque dedans
+donne un acces admin a son auteur des que le jeu tourne. La recherche ecarte
+donc par defaut tout modele dont `hasScripts` est vrai. `--allow-scripts`
+existe, mais il n'y a aucune bonne raison de s'en servir pour du decor.
+
 DEUX ETAPES, JAMAIS UNE SEULE
 
   1. `search`  : interroge le Creator Store et affiche les candidats
@@ -89,28 +97,47 @@ def search(
 
 
 def describe(entry: dict[str, Any]) -> dict[str, Any]:
-    """Extrait les champs utiles, quelle que soit la forme exacte du JSON."""
-
-    def dig(*names: str) -> Any:
-        for name in names:
-            if name in entry and entry[name] not in (None, ""):
-                return entry[name]
-        # Certaines versions imbriquent tout sous 'asset' ou 'product'.
-        for container in ("asset", "product", "creator"):
-            nested = entry.get(container)
-            if isinstance(nested, dict):
-                for name in names:
-                    if nested.get(name) not in (None, ""):
-                        return nested[name]
-        return None
+    """Aplatit un resultat de recherche en ce qui sert a decider."""
+    asset = entry.get("asset") or {}
+    creator = entry.get("creator") or {}
+    voting = entry.get("voting") or {}
+    mesh = asset.get("objectMeshSummary") or {}
+    counts = asset.get("instanceCounts") or {}
 
     return {
-        "id": dig("assetId", "id"),
-        "name": dig("name", "displayName"),
-        "type": dig("assetType", "type"),
-        "creator": dig("creatorName", "name") if entry.get("creator") else None,
-        "priceCents": dig("priceCents", "price"),
+        "id": asset.get("id"),
+        "name": asset.get("name") or "?",
+        "creator": creator.get("name") or "?",
+        "creatorVerified": bool(creator.get("verified")),
+        # hasScripts est le champ le plus important de tout ce fichier.
+        # Voir la note de securite dans l'en-tete du module.
+        "hasScripts": bool(asset.get("hasScripts")) or (asset.get("scriptCount") or 0) > 0,
+        "scriptCount": asset.get("scriptCount") or 0,
+        "triangles": mesh.get("triangles") or 0,
+        "meshParts": counts.get("meshPart") or 0,
+        "upVotePercent": voting.get("upVotePercent"),
+        "voteCount": voting.get("voteCount") or 0,
+        "category": asset.get("categoryPath") or "",
     }
+
+
+def quality_score(info: dict[str, Any]) -> float:
+    """Classe les candidats : approbation, volume de votes, createur verifie.
+
+    Un modele a 95 % d'approbation sur 8 votes est moins sur qu'un modele a
+    85 % sur 900. On pondere donc l'approbation par le volume.
+    """
+    approval = info.get("upVotePercent")
+    votes = info.get("voteCount") or 0
+
+    if approval is None:
+        return 0.0
+
+    confidence = min(1.0, votes / 200.0)
+    score = approval * confidence
+    if info.get("creatorVerified"):
+        score += 5
+    return score
 
 
 def verify(api: common.OpenCloud, asset_id: str) -> dict[str, Any] | None:
@@ -132,22 +159,47 @@ def cmd_search(args, api: common.OpenCloud) -> int:
         common.emit({"results": []}, args.as_json)
         return 0
 
-    common.ok(f"{len(results)} resultat(s) pour '{args.query}' :")
-    rows = []
+    rows = [describe(entry) for entry in results]
 
-    for entry in results:
-        info = describe(entry)
-        rows.append(info)
-        price = info["priceCents"]
-        label = "gratuit" if price in (0, None) else f"{price} cents"
+    scripted = [row for row in rows if row["hasScripts"]]
+    if scripted and not args.allow_scripts:
+        common.warn(
+            f"{len(scripted)} modele(s) ecartes car ils contiennent des scripts "
+            f"(vecteur classique de backdoor) : "
+            + ", ".join(str(row["id"]) for row in scripted[:6])
+        )
+        rows = [row for row in rows if not row["hasScripts"]]
+
+    if args.max_triangles:
+        heavy = [row for row in rows if row["triangles"] > args.max_triangles]
+        if heavy:
+            common.warn(
+                f"{len(heavy)} modele(s) ecartes au-dela de "
+                f"{args.max_triangles} triangles"
+            )
+            rows = [row for row in rows if row["triangles"] <= args.max_triangles]
+
+    rows.sort(key=quality_score, reverse=True)
+
+    if not rows:
+        common.warn("tous les resultats ont ete filtres")
+        common.emit({"results": []}, args.as_json)
+        return 0
+
+    common.ok(f"{len(rows)} candidat(s) pour '{args.query}', du meilleur au moins bon :")
+    common.info(f"  {'id':<18} {'nom':<40} {'tris':>8} {'appro':>7} {'votes':>7}  createur")
+
+    for row in rows:
+        approval = f"{row['upVotePercent']}%" if row["upVotePercent"] is not None else "-"
         common.info(
-            f"  {str(info['id']):<18} {str(info['name'])[:44]:<46} "
-            f"{str(info['type'] or '?'):<8} {label}"
+            f"  {str(row['id']):<18} {row['name'][:38]:<40} "
+            f"{row['triangles']:>8} {approval:>7} {row['voteCount']:>7}  "
+            f"{row['creator'][:18]}{' (verifie)' if row['creatorVerified'] else ''}"
         )
 
     common.warn(
         "aucun de ces IDs n'entre dans un manifest avant "
-        "`store_search.py verify <ids>`"
+        "`store_search.py verify <ids>`, puis un test de chargement en jeu"
     )
     common.emit({"results": rows}, args.as_json)
     return 0
@@ -193,6 +245,18 @@ def main() -> int:
         "--verified-only",
         action="store_true",
         help="uniquement les createurs verifies",
+    )
+    finder.add_argument(
+        "--allow-scripts",
+        action="store_true",
+        help="NE PAS UTILISER sans raison : garde les modeles contenant des "
+        "scripts, principal vecteur de backdoor sur Roblox",
+    )
+    finder.add_argument(
+        "--max-triangles",
+        type=int,
+        default=200000,
+        help="ecarte les modeles trop lourds (defaut : 200 000)",
     )
     common.add_common_args(finder)
 

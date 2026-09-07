@@ -38,3 +38,6 @@ reports/
 Thumbs.db
 .vscode/
 .idea/
+# Candidats et sondes d assets
+build/lobby_candidates.json
+build/probe_assets.luau
