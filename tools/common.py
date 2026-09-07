@@ -196,6 +196,18 @@ class ApiError(RuntimeError):
             )
         if self.status == 404:
             return "ressource introuvable : universeId / placeId probablement faux"
+        if self.status == 409:
+            # Le message de Roblox ("Server is busy") est trompeur : la cause
+            # la plus frequente n'est pas une surcharge mais un verrou pose
+            # par une session Studio ouverte sur cette place.
+            return (
+                "conflit de publication. Cause la plus frequente : la place "
+                "est ouverte dans Roblox Studio, qui tient un verrou "
+                "d'edition.\n"
+                "       -> ferme Studio, puis relance\n"
+                "       -> si Studio est bien ferme, l'API est reellement "
+                "surchargee : reessaie dans quelques minutes"
+            )
         if self.status == 429:
             return "quota depasse, reessaie plus tard"
         return "voir le corps de la reponse ci-dessus"
