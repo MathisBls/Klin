@@ -60,6 +60,17 @@ function Wheel.draw(): GameConfig.Prize
 	return GameConfig.wheel.prizes[#GameConfig.wheel.prizes]
 end
 
+local spinCallbacks: { (Player, GameConfig.Prize) -> () } = {}
+
+--[[
+	Observateur appele a chaque tour, quelle que soit son origine. C'est ce
+	qui permet a un tour achete en Robux - declenche dans ProcessReceipt,
+	loin de tout remote - d'animer quand meme la roue chez le joueur.
+]]
+function Wheel.onSpin(callback: (Player, GameConfig.Prize) -> ())
+	table.insert(spinCallbacks, callback)
+end
+
 local function grant(player: Player, prize: GameConfig.Prize)
 	if prize.reward.kind == "shards" then
 		Currency.add(player, prize.reward.amount)
@@ -93,6 +104,10 @@ function Wheel.spin(player: Player, ignoreCooldown: boolean?): (boolean, GameCon
 
 	local prize = Wheel.draw()
 	grant(player, prize)
+
+	for _, callback in spinCallbacks do
+		task.spawn(callback, player, prize)
+	end
 
 	return true, prize, nil
 end

@@ -226,6 +226,73 @@ test("le tirage pondere respecte les probabilites", function()
 	end
 end)
 
+test("les secteurs de la roue couvrent exactement 360 degres", function()
+	-- Si les secteurs ne pavent pas le disque, l'aiguille tombe entre deux
+	-- lots ou sur le mauvais. C'est le genre de bug qu'un joueur signale
+	-- comme "la roue m'a menti", et qu'on ne peut pas rattraper apres coup.
+	local total = 0
+	for _, prize in GameConfig.wheel.prizes do
+		total += prize.weight
+	end
+
+	local cursor = 0
+	for _, prize in GameConfig.wheel.prizes do
+		cursor += prize.weight / total * 360
+	end
+
+	assertTrue(
+		math.abs(cursor - 360) < 0.001,
+		`les secteurs couvrent {cursor} degres au lieu de 360`
+	)
+end)
+
+test("la roue attribue une couleur distincte a chaque lot", function()
+	-- Deux lots de meme couleur rendent la roue illisible : le joueur ne
+	-- peut plus relier ce qu'il voit a ce qu'il gagne.
+	local WheelUI = require(game:GetService("StarterPlayer").StarterPlayerScripts.Client.ui.WheelUI)
+
+	local seen: { [string]: string } = {}
+	for _, prize in GameConfig.wheel.prizes do
+		local color = WheelUI.PRIZE_COLORS[prize.key]
+		assertTrue(color ~= nil, `{prize.key} n'a pas de couleur declaree`)
+
+		local signature = tostring(color)
+		assertTrue(
+			seen[signature] == nil,
+			`{prize.key} partage la couleur de {tostring(seen[signature])}`
+		)
+		seen[signature] = prize.key
+	end
+end)
+
+test("chaque secteur place son centre au bon angle", function()
+	-- L'angle de centre pilote l'arret de l'animation. S'il derive, la roue
+	-- s'arrete visuellement sur un lot different de celui attribue.
+	local WheelUI = require(game:GetService("StarterPlayer").StarterPlayerScripts.Client.ui.WheelUI)
+
+	local segments = WheelUI.buildSegments()
+	assertEquals(#segments, #GameConfig.wheel.prizes, "nombre de secteurs")
+
+	for index, segment in segments do
+		assertEquals(segment.key, GameConfig.wheel.prizes[index].key, `ordre du secteur {index}`)
+		assertTrue(
+			math.abs(segment.centerAngle - (segment.startAngle + segment.sweep / 2)) < 0.001,
+			`{segment.key} : centre mal calcule`
+		)
+		assertTrue(
+			segment.centerAngle >= segment.startAngle
+				and segment.centerAngle <= segment.startAngle + segment.sweep,
+			`{segment.key} : centre hors de son propre secteur`
+		)
+	end
+
+	local last = segments[#segments]
+	assertTrue(
+		math.abs((last.startAngle + last.sweep) - 360) < 0.001,
+		"le dernier secteur ne ferme pas le disque"
+	)
+end)
+
 test("le cooldown de la roue est un delai plausible", function()
 	local hours = GameConfig.wheel.cooldownSeconds / 3600
 	assertTrue(hours >= 1, `cooldown de {hours}h, trop court pour creer un retour`)

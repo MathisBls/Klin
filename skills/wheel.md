@@ -62,6 +62,18 @@ Wheel.spin(player: Player, paid: boolean): (boolean, Prize?, string?)
 **déjà décidé**. Jamais l'inverse. Un client qui choisit son lot et l'annonce au
 serveur, c'est une roue qui donne toujours le légendaire.
 
+**Un seul chemin d'animation, quelle que soit l'origine du tour.** Un tour
+acheté en Robux est déclenché dans `ProcessReceipt`, loin de tout remote. Sans
+un événement serveur → client dédié, le joueur paie et voit ses gains arriver
+sans que la roue tourne. Le tour gratuit et le tour payant doivent emprunter le
+même événement.
+
+**Les secteurs sont proportionnels au poids, pas de taille égale.** Une roue à
+six parts identiques dont l'une ne sort que 2 % du temps est un mensonge
+visuel. Un secteur proportionnel montre la rareté au lieu de la cacher — et un
+lot à 2 % n'occupe alors que 7,2 degrés, trop peu pour porter une étiquette :
+prévoir une légende à côté.
+
 **Le cooldown est absolu, pas relatif.** Stocker l'horodatage du prochain tour
 (`os.time() + cooldown`), pas un compteur décrémenté. Un compteur se remet à
 zéro quand le joueur se déconnecte.

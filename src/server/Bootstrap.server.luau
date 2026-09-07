@@ -32,6 +32,7 @@ local spinRemote = Remotes.get("Spin") :: RemoteFunction
 local promptRemote = Remotes.get("PromptPurchase") :: RemoteEvent
 local stateRemote = Remotes.get("StateChanged") :: RemoteEvent
 local feedbackRemote = Remotes.get("ClickFeedback") :: RemoteEvent
+local spinPlayedRemote = Remotes.get("SpinPlayed") :: RemoteEvent
 
 -- Dernier clic accepte par joueur, pour le plafond anti-autoclicker.
 local lastClickAt: { [Player]: number } = {}
@@ -66,6 +67,16 @@ end
 
 Currency.onChanged(pushState)
 Receipts.onGranted(pushState)
+
+-- Toute rotation de roue est annoncee au joueur, qu'elle vienne de son
+-- bouton ou d'un achat traite dans ProcessReceipt. Le client n'a alors
+-- qu'un seul chemin d'animation a gerer.
+Wheel.onSpin(function(player, prize)
+	spinPlayedRemote:FireClient(player, {
+		prizeKey = prize.key,
+		displayName = prize.displayName,
+	})
+end)
 
 -- --------------------------------------------------------------------------
 -- Handlers
@@ -108,17 +119,15 @@ buyRemote.OnServerInvoke = function(player: Player, key: any)
 end
 
 spinRemote.OnServerInvoke = function(player: Player)
-	local success, prize, message = Wheel.spin(player)
+	local success, _prize, message = Wheel.spin(player)
 	if not success then
 		return { success = false, message = message }
 	end
 
+	-- Le detail du lot part par SpinPlayed, pas ici : l'animation doit
+	-- suivre le meme chemin qu'un tour achete en Robux.
 	pushState(player)
-	return {
-		success = true,
-		prizeKey = prize and prize.key,
-		displayName = prize and prize.displayName,
-	}
+	return { success = true }
 end
 
 promptRemote.OnServerEvent:Connect(function(player: Player, key: any)

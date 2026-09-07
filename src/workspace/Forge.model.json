@@ -63,10 +63,35 @@
       "className": "Part",
       "properties": {
         "Anchored": true,
-        "Size": [4, 3, 4],
+        "Size": [3.4, 3, 3.4],
         "CFrame": [0, 1.5, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1],
         "Material": "WoodPlanks",
         "Color": [0.24, 0.16, 0.11]
+      }
+    },
+    {
+      "name": "AnvilWaist",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [2, 1.5, 2],
+        "CFrame": [0, 3.75, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1],
+        "Material": "Metal",
+        "Color": [0.15, 0.15, 0.17],
+        "Reflectance": 0.1
+      }
+    },
+    {
+      "name": "AnvilHorn",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Shape": "Cylinder",
+        "Size": [2.5, 1.6, 1.6],
+        "CFrame": [3.2, 5.2, 0, 0, -1, 0, 1, 0, 0, 0, 0, 1],
+        "Material": "Metal",
+        "Color": [0.18, 0.18, 0.2],
+        "Reflectance": 0.15
       }
     },
     {
@@ -74,11 +99,11 @@
       "className": "Part",
       "properties": {
         "Anchored": true,
-        "Size": [5, 2, 3],
-        "CFrame": [0, 4, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1],
+        "Size": [5, 1.4, 2.6],
+        "CFrame": [0, 5.2, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1],
         "Material": "Metal",
-        "Color": [0.18, 0.18, 0.2],
-        "Reflectance": 0.15
+        "Color": [0.2, 0.2, 0.22],
+        "Reflectance": 0.2
       },
       "children": [
         {

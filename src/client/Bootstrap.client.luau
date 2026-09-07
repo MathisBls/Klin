@@ -15,6 +15,7 @@ local Workspace = game:GetService("Workspace")
 local Format = require(ReplicatedStorage.Shared.Format)
 local GameConfig = require(ReplicatedStorage.Shared.config.GameConfig)
 local Remotes = require(ReplicatedStorage.Shared.Remotes)
+local WheelUI = require(script.Parent.ui.WheelUI)
 
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
@@ -25,6 +26,7 @@ local spinRemote = Remotes.get("Spin") :: RemoteFunction
 local promptRemote = Remotes.get("PromptPurchase") :: RemoteEvent
 local stateRemote = Remotes.get("StateChanged") :: RemoteEvent
 local feedbackRemote = Remotes.get("ClickFeedback") :: RemoteEvent
+local spinPlayedRemote = Remotes.get("SpinPlayed") :: RemoteEvent
 
 local ACCENT = Color3.fromRGB(255, 122, 26)
 local PANEL = Color3.fromRGB(22, 20, 24)
@@ -98,6 +100,13 @@ subtitle.Parent = screen
 
 local shopButton = makeButton("ShopButton", "Atelier", UDim2.new(0, 16, 1, -16), Vector2.new(0, 1))
 local wheelButton = makeButton("WheelButton", "Roue", UDim2.new(1, -16, 1, -16), Vector2.new(1, 1))
+
+-- Raccourci d'achat, au-dessus du bouton Atelier. Visible sans etre
+-- impose : la spec ne veut pas d'un jeu qui pousse a payer.
+local pouchButton =
+	makeButton("PouchButton", "Bourse d'eclats", UDim2.new(0, 16, 1, -70), Vector2.new(0, 1))
+pouchButton.Size = UDim2.fromOffset(150, 36)
+pouchButton.TextSize = 13
 
 -- --------------------------------------------------------------------------
 -- Panneau boutique
@@ -177,61 +186,7 @@ for index, upgrade in GameConfig.upgrades do
 	addUpgradeRow(upgrade, index)
 end
 
--- --------------------------------------------------------------------------
--- Panneau roue
--- --------------------------------------------------------------------------
-
-local wheelPanel = Instance.new("Frame")
-wheelPanel.Name = "WheelPanel"
-wheelPanel.Size = UDim2.fromOffset(300, 200)
-wheelPanel.Position = UDim2.new(1, -16, 1, -76)
-wheelPanel.AnchorPoint = Vector2.new(1, 1)
-wheelPanel.BackgroundColor3 = PANEL
-wheelPanel.BackgroundTransparency = 0.05
-wheelPanel.BorderSizePixel = 0
-wheelPanel.Visible = false
-wheelPanel.Parent = screen
-corner(wheelPanel, 10)
-
-local wheelStatus = Instance.new("TextLabel")
-wheelStatus.Size = UDim2.new(1, -20, 0, 80)
-wheelStatus.Position = UDim2.fromOffset(10, 10)
-wheelStatus.BackgroundTransparency = 1
-wheelStatus.Font = Enum.Font.Gotham
-wheelStatus.TextSize = 15
-wheelStatus.TextColor3 = TEXT
-wheelStatus.TextWrapped = true
-wheelStatus.Text = "..."
-wheelStatus.Parent = wheelPanel
-
-local spinButton = Instance.new("TextButton")
-spinButton.Size = UDim2.new(1, -20, 0, 44)
-spinButton.Position = UDim2.fromOffset(10, 96)
-spinButton.BackgroundColor3 = ACCENT
-spinButton.BorderSizePixel = 0
-spinButton.Font = Enum.Font.GothamBold
-spinButton.TextSize = 16
-spinButton.TextColor3 = Color3.new(0, 0, 0)
-spinButton.Text = "Tourner"
-spinButton.Parent = wheelPanel
-corner(spinButton, 6)
-
-local buySpinButton = Instance.new("TextButton")
-buySpinButton.Size = UDim2.new(1, -20, 0, 34)
-buySpinButton.Position = UDim2.fromOffset(10, 150)
-buySpinButton.BackgroundColor3 = Color3.fromRGB(46, 42, 50)
-buySpinButton.BorderSizePixel = 0
-buySpinButton.Font = Enum.Font.Gotham
-buySpinButton.TextSize = 13
-buySpinButton.TextColor3 = TEXT
-buySpinButton.Text = "Tour supplementaire (Robux)"
-buySpinButton.Parent = wheelPanel
-corner(buySpinButton, 6)
-
-local pouchButton =
-	makeButton("PouchButton", "Bourse d'eclats", UDim2.new(0, 16, 1, -70), Vector2.new(0, 1))
-pouchButton.Size = UDim2.fromOffset(150, 36)
-pouchButton.TextSize = 13
+local wheel = WheelUI.new(screen)
 
 -- --------------------------------------------------------------------------
 -- Feedback de clic
@@ -323,15 +278,12 @@ local function refresh()
 	end
 
 	local remaining = current.spinAvailableAt - os.time()
-	if remaining <= 0 then
-		wheelStatus.Text = "La roue est prete."
-		spinButton.Text = "Tourner"
-		spinButton.BackgroundColor3 = ACCENT
-	else
-		wheelStatus.Text = `Prochain tour dans {Format.duration(remaining)}.`
-		spinButton.Text = "Pas encore"
-		spinButton.BackgroundColor3 = Color3.fromRGB(60, 56, 64)
-	end
+	wheel:setCooldown(remaining, `Prochain tour dans {Format.duration(remaining)}`)
+
+	-- Pastille sur le bouton quand un tour est disponible : le joueur ne
+	-- doit pas avoir a ouvrir le panneau pour savoir qu'il peut jouer.
+	wheelButton.Text = if remaining <= 0 then "Roue  ●" else "Roue"
+	wheelButton.TextColor3 = if remaining <= 0 then ACCENT else TEXT
 end
 
 stateRemote.OnClientEvent:Connect(function(newState: Remotes.PlayerState)
@@ -367,25 +319,47 @@ task.spawn(connectAnvil)
 
 shopButton.Activated:Connect(function()
 	shopPanel.Visible = not shopPanel.Visible
-	wheelPanel.Visible = false
+	wheel:setOpen(false)
 end)
 
 wheelButton.Activated:Connect(function()
-	wheelPanel.Visible = not wheelPanel.Visible
+	wheel:setOpen(not wheel:isOpen())
 	shopPanel.Visible = false
 end)
 
-spinButton.Activated:Connect(function()
+wheel.closeButton.Activated:Connect(function()
+	wheel:setOpen(false)
+end)
+
+wheel.spinButton.Activated:Connect(function()
+	-- On ne se sert du retour que pour les refus. Un tour reussi arrive par
+	-- SpinPlayed, comme un tour achete en Robux : un seul chemin d'animation
+	-- pour les deux origines.
 	local result = spinRemote:InvokeServer()
-	if result.success then
-		wheelStatus.Text = `Tu as obtenu : {result.displayName}`
-	elseif result.message then
-		wheelStatus.Text = result.message
+	if not result.success and result.message then
+		wheel:setStatus(result.message)
 	end
 end)
 
-buySpinButton.Activated:Connect(function()
+wheel.buyButton.Activated:Connect(function()
 	promptRemote:FireServer("EXTRA_SPIN")
+end)
+
+spinPlayedRemote.OnClientEvent:Connect(function(payload)
+	if typeof(payload) ~= "table" or typeof(payload.prizeKey) ~= "string" then
+		return
+	end
+
+	-- Un tour achete peut arriver alors que le panneau est ferme : on
+	-- l'ouvre, sinon le joueur paie et ne voit rien.
+	wheel:setOpen(true)
+	wheel:setStatus("")
+
+	wheel:playSpin(payload.prizeKey, function(segment)
+		if segment then
+			wheel:setStatus(`Tu as obtenu : {segment.displayName}`)
+		end
+	end)
 end)
 
 pouchButton.Activated:Connect(function()

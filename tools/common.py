@@ -2,7 +2,7 @@
 
 Tout appel HTTP vers Roblox passe par ici. Regles :
   - la cle API n'est jamais affichee ni loggee (voir `redact`)
-  - les erreurs 429 et 5xx sont retentees avec backoff, le reste remonte
+  - les erreurs 409, 429 et 5xx sont retentees avec backoff, le reste remonte
   - chaque script sort avec un code != 0 en cas d'echec, pour le Makefile
 """
 
@@ -23,7 +23,7 @@ from typing import Any
 ROOT = Path(__file__).resolve().parent.parent
 API_HOST = "https://apis.roblox.com"
 
-# Nombre de tentatives sur les erreurs transitoires (429, 5xx, reseau).
+# Nombre de tentatives sur les erreurs transitoires (409, 429, 5xx, reseau).
 MAX_RETRIES = 5
 BASE_BACKOFF = 1.0
 
@@ -265,7 +265,14 @@ class OpenCloud:
                 text = redact(
                     exc.read().decode("utf-8", errors="replace"), self.config.api_key
                 )
-                transient = exc.code == 429 or 500 <= exc.code < 600
+                # 409 : "Server is busy and unable to process your upload".
+                # Roblox le renvoie sur une publication quand son backend est
+                # charge. C'est un "reessaie plus tard" deguise en conflit,
+                # pas une erreur de notre requete.
+                transient = (
+                    exc.code in (409, 429)
+                    or 500 <= exc.code < 600
+                )
                 if transient and attempt < MAX_RETRIES:
                     delay = self._retry_delay(exc, attempt)
                     warn(
@@ -298,7 +305,10 @@ class OpenCloud:
                     return float(retry_after)
                 except ValueError:
                     pass
-        return BASE_BACKOFF * (2 ** (attempt - 1)) + random.uniform(0, 0.5)
+        # Roblox demande explicitement d'attendre "quelques minutes" sur un
+        # 409 : un backoff d'une seconde ne ferait que gaspiller les essais.
+        base = 15.0 if exc is not None and exc.code == 409 else BASE_BACKOFF
+        return base * (2 ** (attempt - 1)) + random.uniform(0, 0.5)
 
     def poll_operation(
         self, operation_path: str, *, timeout: float = 180.0, interval: float = 2.0

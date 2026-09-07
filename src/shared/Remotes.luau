@@ -46,6 +46,13 @@ local definitions = {
 	StateChanged = "RemoteEvent",
 	-- Serveur -> client, argument : { amount: number } pour le feedback visuel.
 	ClickFeedback = "RemoteEvent",
+	-- Serveur -> client, argument : SpinResult.
+	--
+	-- Toute rotation de roue passe par la, quelle que soit son origine :
+	-- tour gratuit demande par le client, ou tour achete en Robux et donc
+	-- declenche dans ProcessReceipt. Sans ca, un joueur qui paie un tour
+	-- verrait ses eclats arriver sans jamais voir la roue tourner.
+	SpinPlayed = "RemoteEvent",
 }
 
 local Remotes = {}
