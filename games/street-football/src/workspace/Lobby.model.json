@@ -1,0 +1,2538 @@
+{
+  "className": "Model",
+  "children": [
+    {
+      "name": "Ground",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [
+          520,
+          8,
+          520
+        ],
+        "CFrame": [
+          0,
+          -4,
+          0,
+          1.0,
+          0,
+          0.0,
+          0,
+          1,
+          0,
+          -0.0,
+          0,
+          1.0
+        ],
+        "Material": "Grass",
+        "Color": [
+          0.29,
+          0.45,
+          0.22
+        ],
+        "TopSurface": "Smooth",
+        "BottomSurface": "Smooth"
+      }
+    },
+    {
+      "name": "Plaza",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [
+          140,
+          1,
+          140
+        ],
+        "CFrame": [
+          0,
+          0.4,
+          0,
+          1.0,
+          0,
+          0.0,
+          0,
+          1,
+          0,
+          -0.0,
+          0,
+          1.0
+        ],
+        "Material": "Cobblestone",
+        "Color": [
+          0.52,
+          0.5,
+          0.47
+        ]
+      }
+    },
+    {
+      "name": "PlazaRing",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [
+          152,
+          0.8,
+          152
+        ],
+        "CFrame": [
+          0,
+          0.2,
+          0,
+          1.0,
+          0,
+          0.0,
+          0,
+          1,
+          0,
+          -0.0,
+          0,
+          1.0
+        ],
+        "Material": "Slate",
+        "Color": [
+          0.4,
+          0.38,
+          0.36
+        ]
+      }
+    },
+    {
+      "name": "FountainBase",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [
+          28,
+          3,
+          28
+        ],
+        "CFrame": [
+          0,
+          1.5,
+          0,
+          1.0,
+          0,
+          0.0,
+          0,
+          1,
+          0,
+          -0.0,
+          0,
+          1.0
+        ],
+        "Material": "Marble",
+        "Color": [
+          0.68,
+          0.66,
+          0.62
+        ]
+      }
+    },
+    {
+      "name": "FountainWater",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [
+          24,
+          0.6,
+          24
+        ],
+        "CFrame": [
+          0,
+          3.1,
+          0,
+          1.0,
+          0,
+          0.0,
+          0,
+          1,
+          0,
+          -0.0,
+          0,
+          1.0
+        ],
+        "Material": "Glass",
+        "Color": [
+          0.35,
+          0.62,
+          0.78
+        ],
+        "Transparency": 0.35,
+        "CanCollide": false,
+        "Reflectance": 0.25
+      }
+    },
+    {
+      "name": "FountainStem",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [
+          6,
+          7,
+          6
+        ],
+        "CFrame": [
+          0,
+          6.5,
+          0,
+          1.0,
+          0,
+          0.0,
+          0,
+          1,
+          0,
+          -0.0,
+          0,
+          1.0
+        ],
+        "Material": "Marble",
+        "Color": [
+          0.72,
+          0.7,
+          0.66
+        ]
+      }
+    },
+    {
+      "name": "FountainBowl",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [
+          14,
+          1.6,
+          14
+        ],
+        "CFrame": [
+          0,
+          10.5,
+          0,
+          1.0,
+          0,
+          0.0,
+          0,
+          1,
+          0,
+          -0.0,
+          0,
+          1.0
+        ],
+        "Material": "Marble",
+        "Color": [
+          0.72,
+          0.7,
+          0.66
+        ]
+      }
+    },
+    {
+      "name": "FountainTop",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [
+          3,
+          4,
+          3
+        ],
+        "CFrame": [
+          0,
+          13,
+          0,
+          1.0,
+          0,
+          0.0,
+          0,
+          1,
+          0,
+          -0.0,
+          0,
+          1.0
+        ],
+        "Material": "Marble",
+        "Color": [
+          0.76,
+          0.74,
+          0.7
+        ]
+      }
+    },
+    {
+      "name": "FountainJet",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [
+          1.6,
+          6,
+          1.6
+        ],
+        "CFrame": [
+          0,
+          16,
+          0,
+          1.0,
+          0,
+          0.0,
+          0,
+          1,
+          0,
+          -0.0,
+          0,
+          1.0
+        ],
+        "Material": "Neon",
+        "Color": [
+          0.6,
+          0.85,
+          1
+        ],
+        "Transparency": 0.5,
+        "CanCollide": false
+      }
+    },
+    {
+      "name": "PathNorth",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [
+          20,
+          0.6,
+          190
+        ],
+        "CFrame": [
+          0,
+          0.35,
+          -115,
+          1.0,
+          0,
+          0.0,
+          0,
+          1,
+          0,
+          -0.0,
+          0,
+          1.0
+        ],
+        "Material": "Sand",
+        "Color": [
+          0.62,
+          0.53,
+          0.4
+        ]
+      }
+    },
+    {
+      "name": "PathSouth",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [
+          20,
+          0.6,
+          170
+        ],
+        "CFrame": [
+          0,
+          0.35,
+          155,
+          1.0,
+          0,
+          0.0,
+          0,
+          1,
+          0,
+          -0.0,
+          0,
+          1.0
+        ],
+        "Material": "Sand",
+        "Color": [
+          0.62,
+          0.53,
+          0.4
+        ]
+      }
+    },
+    {
+      "name": "PathEast",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [
+          190,
+          0.6,
+          20
+        ],
+        "CFrame": [
+          115,
+          0.35,
+          0,
+          1.0,
+          0,
+          0.0,
+          0,
+          1,
+          0,
+          -0.0,
+          0,
+          1.0
+        ],
+        "Material": "Sand",
+        "Color": [
+          0.62,
+          0.53,
+          0.4
+        ]
+      }
+    },
+    {
+      "name": "PathWest",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [
+          190,
+          0.6,
+          20
+        ],
+        "CFrame": [
+          -115,
+          0.35,
+          0,
+          1.0,
+          0,
+          0.0,
+          0,
+          1,
+          0,
+          -0.0,
+          0,
+          1.0
+        ],
+        "Material": "Sand",
+        "Color": [
+          0.62,
+          0.53,
+          0.4
+        ]
+      }
+    },
+    {
+      "name": "GateLeft",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [
+          10,
+          34,
+          14
+        ],
+        "CFrame": [
+          -26,
+          17,
+          -120,
+          1.0,
+          0,
+          0.0,
+          0,
+          1,
+          0,
+          -0.0,
+          0,
+          1.0
+        ],
+        "Material": "Concrete",
+        "Color": [
+          0.82,
+          0.8,
+          0.76
+        ]
+      }
+    },
+    {
+      "name": "GateRight",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [
+          10,
+          34,
+          14
+        ],
+        "CFrame": [
+          26,
+          17,
+          -120,
+          1.0,
+          0,
+          0.0,
+          0,
+          1,
+          0,
+          -0.0,
+          0,
+          1.0
+        ],
+        "Material": "Concrete",
+        "Color": [
+          0.82,
+          0.8,
+          0.76
+        ]
+      }
+    },
+    {
+      "name": "GateBeam",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [
+          62,
+          8,
+          14
+        ],
+        "CFrame": [
+          0,
+          38,
+          -120,
+          1.0,
+          0,
+          0.0,
+          0,
+          1,
+          0,
+          -0.0,
+          0,
+          1.0
+        ],
+        "Material": "Concrete",
+        "Color": [
+          0.86,
+          0.84,
+          0.8
+        ]
+      }
+    },
+    {
+      "name": "GateSign",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [
+          46,
+          6,
+          1
+        ],
+        "CFrame": [
+          0,
+          38,
+          -127.5,
+          1.0,
+          0,
+          0.0,
+          0,
+          1,
+          0,
+          -0.0,
+          0,
+          1.0
+        ],
+        "Material": "SmoothPlastic",
+        "Color": [
+          0.1,
+          0.12,
+          0.16
+        ]
+      }
+    },
+    {
+      "name": "PortalPad1",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [
+          26,
+          1,
+          26
+        ],
+        "CFrame": [
+          -46,
+          0.6,
+          -176,
+          1.0,
+          0,
+          0.0,
+          0,
+          1,
+          0,
+          -0.0,
+          0,
+          1.0
+        ],
+        "Material": "Neon",
+        "Color": [
+          0.25,
+          0.75,
+          0.42
+        ],
+        "Transparency": 0.25
+      }
+    },
+    {
+      "name": "PortalArchL1",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [
+          3,
+          22,
+          3
+        ],
+        "CFrame": [
+          -59,
+          11,
+          -176,
+          1.0,
+          0,
+          0.0,
+          0,
+          1,
+          0,
+          -0.0,
+          0,
+          1.0
+        ],
+        "Material": "Metal",
+        "Color": [
+          0.3,
+          0.33,
+          0.38
+        ]
+      }
+    },
+    {
+      "name": "PortalArchR1",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [
+          3,
+          22,
+          3
+        ],
+        "CFrame": [
+          -33,
+          11,
+          -176,
+          1.0,
+          0,
+          0.0,
+          0,
+          1,
+          0,
+          -0.0,
+          0,
+          1.0
+        ],
+        "Material": "Metal",
+        "Color": [
+          0.3,
+          0.33,
+          0.38
+        ]
+      }
+    },
+    {
+      "name": "PortalArchTop1",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [
+          29,
+          3,
+          3
+        ],
+        "CFrame": [
+          -46,
+          23,
+          -176,
+          1.0,
+          0,
+          0.0,
+          0,
+          1,
+          0,
+          -0.0,
+          0,
+          1.0
+        ],
+        "Material": "Metal",
+        "Color": [
+          0.3,
+          0.33,
+          0.38
+        ]
+      }
+    },
+    {
+      "name": "PortalPad2",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [
+          26,
+          1,
+          26
+        ],
+        "CFrame": [
+          0,
+          0.6,
+          -176,
+          1.0,
+          0,
+          0.0,
+          0,
+          1,
+          0,
+          -0.0,
+          0,
+          1.0
+        ],
+        "Material": "Neon",
+        "Color": [
+          0.25,
+          0.75,
+          0.42
+        ],
+        "Transparency": 0.25
+      }
+    },
+    {
+      "name": "PortalArchL2",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [
+          3,
+          22,
+          3
+        ],
+        "CFrame": [
+          -13,
+          11,
+          -176,
+          1.0,
+          0,
+          0.0,
+          0,
+          1,
+          0,
+          -0.0,
+          0,
+          1.0
+        ],
+        "Material": "Metal",
+        "Color": [
+          0.3,
+          0.33,
+          0.38
+        ]
+      }
+    },
+    {
+      "name": "PortalArchR2",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [
+          3,
+          22,
+          3
+        ],
+        "CFrame": [
+          13,
+          11,
+          -176,
+          1.0,
+          0,
+          0.0,
+          0,
+          1,
+          0,
+          -0.0,
+          0,
+          1.0
+        ],
+        "Material": "Metal",
+        "Color": [
+          0.3,
+          0.33,
+          0.38
+        ]
+      }
+    },
+    {
+      "name": "PortalArchTop2",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [
+          29,
+          3,
+          3
+        ],
+        "CFrame": [
+          0,
+          23,
+          -176,
+          1.0,
+          0,
+          0.0,
+          0,
+          1,
+          0,
+          -0.0,
+          0,
+          1.0
+        ],
+        "Material": "Metal",
+        "Color": [
+          0.3,
+          0.33,
+          0.38
+        ]
+      }
+    },
+    {
+      "name": "PortalPad3",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [
+          26,
+          1,
+          26
+        ],
+        "CFrame": [
+          46,
+          0.6,
+          -176,
+          1.0,
+          0,
+          0.0,
+          0,
+          1,
+          0,
+          -0.0,
+          0,
+          1.0
+        ],
+        "Material": "Neon",
+        "Color": [
+          0.25,
+          0.75,
+          0.42
+        ],
+        "Transparency": 0.25
+      }
+    },
+    {
+      "name": "PortalArchL3",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [
+          3,
+          22,
+          3
+        ],
+        "CFrame": [
+          33,
+          11,
+          -176,
+          1.0,
+          0,
+          0.0,
+          0,
+          1,
+          0,
+          -0.0,
+          0,
+          1.0
+        ],
+        "Material": "Metal",
+        "Color": [
+          0.3,
+          0.33,
+          0.38
+        ]
+      }
+    },
+    {
+      "name": "PortalArchR3",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [
+          3,
+          22,
+          3
+        ],
+        "CFrame": [
+          59,
+          11,
+          -176,
+          1.0,
+          0,
+          0.0,
+          0,
+          1,
+          0,
+          -0.0,
+          0,
+          1.0
+        ],
+        "Material": "Metal",
+        "Color": [
+          0.3,
+          0.33,
+          0.38
+        ]
+      }
+    },
+    {
+      "name": "PortalArchTop3",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [
+          29,
+          3,
+          3
+        ],
+        "CFrame": [
+          46,
+          23,
+          -176,
+          1.0,
+          0,
+          0.0,
+          0,
+          1,
+          0,
+          -0.0,
+          0,
+          1.0
+        ],
+        "Material": "Metal",
+        "Color": [
+          0.3,
+          0.33,
+          0.38
+        ]
+      }
+    },
+    {
+      "name": "ShopFloor1",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [
+          44,
+          1,
+          38
+        ],
+        "CFrame": [
+          -150,
+          0.6,
+          -46,
+          1.0,
+          0,
+          0.0,
+          0,
+          1,
+          0,
+          -0.0,
+          0,
+          1.0
+        ],
+        "Material": "WoodPlanks",
+        "Color": [
+          0.45,
+          0.33,
+          0.22
+        ]
+      }
+    },
+    {
+      "name": "ShopBack1",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [
+          2,
+          26,
+          38
+        ],
+        "CFrame": [
+          -171,
+          13,
+          -46,
+          1.0,
+          0,
+          0.0,
+          0,
+          1,
+          0,
+          -0.0,
+          0,
+          1.0
+        ],
+        "Material": "Brick",
+        "Color": [
+          0.55,
+          0.4,
+          0.34
+        ]
+      }
+    },
+    {
+      "name": "ShopSideA1",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [
+          44,
+          26,
+          2
+        ],
+        "CFrame": [
+          -150,
+          13,
+          -64,
+          1.0,
+          0,
+          0.0,
+          0,
+          1,
+          0,
+          -0.0,
+          0,
+          1.0
+        ],
+        "Material": "Brick",
+        "Color": [
+          0.55,
+          0.4,
+          0.34
+        ]
+      }
+    },
+    {
+      "name": "ShopSideB1",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [
+          44,
+          26,
+          2
+        ],
+        "CFrame": [
+          -150,
+          13,
+          -28,
+          1.0,
+          0,
+          0.0,
+          0,
+          1,
+          0,
+          -0.0,
+          0,
+          1.0
+        ],
+        "Material": "Brick",
+        "Color": [
+          0.55,
+          0.4,
+          0.34
+        ]
+      }
+    },
+    {
+      "name": "ShopRoof1",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [
+          50,
+          2,
+          44
+        ],
+        "CFrame": [
+          -150,
+          26,
+          -46,
+          1.0,
+          0,
+          0.0,
+          0,
+          1,
+          0,
+          -0.0,
+          0,
+          1.0
+        ],
+        "Material": "Slate",
+        "Color": [
+          0.25,
+          0.2,
+          0.2
+        ]
+      }
+    },
+    {
+      "name": "ShopAwning1",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [
+          10,
+          1,
+          40
+        ],
+        "CFrame": [
+          -126,
+          20,
+          -46,
+          1.0,
+          0,
+          0.0,
+          0,
+          1,
+          0,
+          -0.0,
+          0,
+          1.0
+        ],
+        "Material": "Fabric",
+        "Color": [
+          0.8,
+          0.25,
+          0.25
+        ],
+        "CanCollide": false
+      }
+    },
+    {
+      "name": "ShopCounter1",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [
+          4,
+          6,
+          32
+        ],
+        "CFrame": [
+          -132,
+          4,
+          -46,
+          1.0,
+          0,
+          0.0,
+          0,
+          1,
+          0,
+          -0.0,
+          0,
+          1.0
+        ],
+        "Material": "Wood",
+        "Color": [
+          0.35,
+          0.25,
+          0.16
+        ]
+      }
+    },
+    {
+      "name": "ShopFloor2",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [
+          44,
+          1,
+          38
+        ],
+        "CFrame": [
+          -150,
+          0.6,
+          0,
+          1.0,
+          0,
+          0.0,
+          0,
+          1,
+          0,
+          -0.0,
+          0,
+          1.0
+        ],
+        "Material": "WoodPlanks",
+        "Color": [
+          0.45,
+          0.33,
+          0.22
+        ]
+      }
+    },
+    {
+      "name": "ShopBack2",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [
+          2,
+          26,
+          38
+        ],
+        "CFrame": [
+          -171,
+          13,
+          0,
+          1.0,
+          0,
+          0.0,
+          0,
+          1,
+          0,
+          -0.0,
+          0,
+          1.0
+        ],
+        "Material": "Brick",
+        "Color": [
+          0.55,
+          0.4,
+          0.34
+        ]
+      }
+    },
+    {
+      "name": "ShopSideA2",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [
+          44,
+          26,
+          2
+        ],
+        "CFrame": [
+          -150,
+          13,
+          -18,
+          1.0,
+          0,
+          0.0,
+          0,
+          1,
+          0,
+          -0.0,
+          0,
+          1.0
+        ],
+        "Material": "Brick",
+        "Color": [
+          0.55,
+          0.4,
+          0.34
+        ]
+      }
+    },
+    {
+      "name": "ShopSideB2",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [
+          44,
+          26,
+          2
+        ],
+        "CFrame": [
+          -150,
+          13,
+          18,
+          1.0,
+          0,
+          0.0,
+          0,
+          1,
+          0,
+          -0.0,
+          0,
+          1.0
+        ],
+        "Material": "Brick",
+        "Color": [
+          0.55,
+          0.4,
+          0.34
+        ]
+      }
+    },
+    {
+      "name": "ShopRoof2",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [
+          50,
+          2,
+          44
+        ],
+        "CFrame": [
+          -150,
+          26,
+          0,
+          1.0,
+          0,
+          0.0,
+          0,
+          1,
+          0,
+          -0.0,
+          0,
+          1.0
+        ],
+        "Material": "Slate",
+        "Color": [
+          0.25,
+          0.2,
+          0.2
+        ]
+      }
+    },
+    {
+      "name": "ShopAwning2",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [
+          10,
+          1,
+          40
+        ],
+        "CFrame": [
+          -126,
+          20,
+          0,
+          1.0,
+          0,
+          0.0,
+          0,
+          1,
+          0,
+          -0.0,
+          0,
+          1.0
+        ],
+        "Material": "Fabric",
+        "Color": [
+          0.8,
+          0.25,
+          0.25
+        ],
+        "CanCollide": false
+      }
+    },
+    {
+      "name": "ShopCounter2",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [
+          4,
+          6,
+          32
+        ],
+        "CFrame": [
+          -132,
+          4,
+          0,
+          1.0,
+          0,
+          0.0,
+          0,
+          1,
+          0,
+          -0.0,
+          0,
+          1.0
+        ],
+        "Material": "Wood",
+        "Color": [
+          0.35,
+          0.25,
+          0.16
+        ]
+      }
+    },
+    {
+      "name": "ShopFloor3",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [
+          44,
+          1,
+          38
+        ],
+        "CFrame": [
+          -150,
+          0.6,
+          46,
+          1.0,
+          0,
+          0.0,
+          0,
+          1,
+          0,
+          -0.0,
+          0,
+          1.0
+        ],
+        "Material": "WoodPlanks",
+        "Color": [
+          0.45,
+          0.33,
+          0.22
+        ]
+      }
+    },
+    {
+      "name": "ShopBack3",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [
+          2,
+          26,
+          38
+        ],
+        "CFrame": [
+          -171,
+          13,
+          46,
+          1.0,
+          0,
+          0.0,
+          0,
+          1,
+          0,
+          -0.0,
+          0,
+          1.0
+        ],
+        "Material": "Brick",
+        "Color": [
+          0.55,
+          0.4,
+          0.34
+        ]
+      }
+    },
+    {
+      "name": "ShopSideA3",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [
+          44,
+          26,
+          2
+        ],
+        "CFrame": [
+          -150,
+          13,
+          28,
+          1.0,
+          0,
+          0.0,
+          0,
+          1,
+          0,
+          -0.0,
+          0,
+          1.0
+        ],
+        "Material": "Brick",
+        "Color": [
+          0.55,
+          0.4,
+          0.34
+        ]
+      }
+    },
+    {
+      "name": "ShopSideB3",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [
+          44,
+          26,
+          2
+        ],
+        "CFrame": [
+          -150,
+          13,
+          64,
+          1.0,
+          0,
+          0.0,
+          0,
+          1,
+          0,
+          -0.0,
+          0,
+          1.0
+        ],
+        "Material": "Brick",
+        "Color": [
+          0.55,
+          0.4,
+          0.34
+        ]
+      }
+    },
+    {
+      "name": "ShopRoof3",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [
+          50,
+          2,
+          44
+        ],
+        "CFrame": [
+          -150,
+          26,
+          46,
+          1.0,
+          0,
+          0.0,
+          0,
+          1,
+          0,
+          -0.0,
+          0,
+          1.0
+        ],
+        "Material": "Slate",
+        "Color": [
+          0.25,
+          0.2,
+          0.2
+        ]
+      }
+    },
+    {
+      "name": "ShopAwning3",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [
+          10,
+          1,
+          40
+        ],
+        "CFrame": [
+          -126,
+          20,
+          46,
+          1.0,
+          0,
+          0.0,
+          0,
+          1,
+          0,
+          -0.0,
+          0,
+          1.0
+        ],
+        "Material": "Fabric",
+        "Color": [
+          0.8,
+          0.25,
+          0.25
+        ],
+        "CanCollide": false
+      }
+    },
+    {
+      "name": "ShopCounter3",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [
+          4,
+          6,
+          32
+        ],
+        "CFrame": [
+          -132,
+          4,
+          46,
+          1.0,
+          0,
+          0.0,
+          0,
+          1,
+          0,
+          -0.0,
+          0,
+          1.0
+        ],
+        "Material": "Wood",
+        "Color": [
+          0.35,
+          0.25,
+          0.16
+        ]
+      }
+    },
+    {
+      "name": "TrainGround",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [
+          110,
+          0.8,
+          120
+        ],
+        "CFrame": [
+          175,
+          0.5,
+          0,
+          1.0,
+          0,
+          0.0,
+          0,
+          1,
+          0,
+          -0.0,
+          0,
+          1.0
+        ],
+        "Material": "Grass",
+        "Color": [
+          0.24,
+          0.42,
+          0.2
+        ]
+      }
+    },
+    {
+      "name": "TrainGoalPostL",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [
+          2,
+          18,
+          2
+        ],
+        "CFrame": [
+          222,
+          9,
+          -14,
+          1.0,
+          0,
+          0.0,
+          0,
+          1,
+          0,
+          -0.0,
+          0,
+          1.0
+        ],
+        "Material": "SmoothPlastic",
+        "Color": [
+          0.95,
+          0.95,
+          0.95
+        ]
+      }
+    },
+    {
+      "name": "TrainGoalPostR",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [
+          2,
+          18,
+          2
+        ],
+        "CFrame": [
+          222,
+          9,
+          14,
+          1.0,
+          0,
+          0.0,
+          0,
+          1,
+          0,
+          -0.0,
+          0,
+          1.0
+        ],
+        "Material": "SmoothPlastic",
+        "Color": [
+          0.95,
+          0.95,
+          0.95
+        ]
+      }
+    },
+    {
+      "name": "TrainGoalBar",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [
+          2,
+          2,
+          30
+        ],
+        "CFrame": [
+          222,
+          18,
+          0,
+          1.0,
+          0,
+          0.0,
+          0,
+          1,
+          0,
+          -0.0,
+          0,
+          1.0
+        ],
+        "Material": "SmoothPlastic",
+        "Color": [
+          0.95,
+          0.95,
+          0.95
+        ]
+      }
+    },
+    {
+      "name": "TrainGoalNet",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [
+          1,
+          18,
+          30
+        ],
+        "CFrame": [
+          225,
+          9,
+          0,
+          1.0,
+          0,
+          0.0,
+          0,
+          1,
+          0,
+          -0.0,
+          0,
+          1.0
+        ],
+        "Material": "ForceField",
+        "Color": [
+          0.85,
+          0.9,
+          0.95
+        ],
+        "Transparency": 0.6,
+        "CanCollide": false
+      }
+    },
+    {
+      "name": "TrainTarget1",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [
+          1,
+          5,
+          5
+        ],
+        "CFrame": [
+          221,
+          5,
+          -9,
+          1.0,
+          0,
+          0.0,
+          0,
+          1,
+          0,
+          -0.0,
+          0,
+          1.0
+        ],
+        "Material": "Neon",
+        "Color": [
+          1,
+          0.65,
+          0.15
+        ],
+        "CanCollide": false
+      }
+    },
+    {
+      "name": "TrainTarget2",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [
+          1,
+          5,
+          5
+        ],
+        "CFrame": [
+          221,
+          12,
+          0,
+          1.0,
+          0,
+          0.0,
+          0,
+          1,
+          0,
+          -0.0,
+          0,
+          1.0
+        ],
+        "Material": "Neon",
+        "Color": [
+          1,
+          0.65,
+          0.15
+        ],
+        "CanCollide": false
+      }
+    },
+    {
+      "name": "TrainTarget3",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [
+          1,
+          5,
+          5
+        ],
+        "CFrame": [
+          221,
+          5,
+          9,
+          1.0,
+          0,
+          0.0,
+          0,
+          1,
+          0,
+          -0.0,
+          0,
+          1.0
+        ],
+        "Material": "Neon",
+        "Color": [
+          1,
+          0.65,
+          0.15
+        ],
+        "CanCollide": false
+      }
+    },
+    {
+      "name": "Step1",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [
+          56,
+          2,
+          6
+        ],
+        "CFrame": [
+          0,
+          1,
+          132,
+          1.0,
+          0,
+          0.0,
+          0,
+          1,
+          0,
+          -0.0,
+          0,
+          1.0
+        ],
+        "Material": "Slate",
+        "Color": [
+          0.48,
+          0.46,
+          0.44
+        ]
+      }
+    },
+    {
+      "name": "Step2",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [
+          56,
+          2,
+          6
+        ],
+        "CFrame": [
+          0,
+          3,
+          138,
+          1.0,
+          0,
+          0.0,
+          0,
+          1,
+          0,
+          -0.0,
+          0,
+          1.0
+        ],
+        "Material": "Slate",
+        "Color": [
+          0.48,
+          0.46,
+          0.44
+        ]
+      }
+    },
+    {
+      "name": "Step3",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [
+          56,
+          2,
+          6
+        ],
+        "CFrame": [
+          0,
+          5,
+          144,
+          1.0,
+          0,
+          0.0,
+          0,
+          1,
+          0,
+          -0.0,
+          0,
+          1.0
+        ],
+        "Material": "Slate",
+        "Color": [
+          0.48,
+          0.46,
+          0.44
+        ]
+      }
+    },
+    {
+      "name": "Step4",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [
+          56,
+          2,
+          6
+        ],
+        "CFrame": [
+          0,
+          7,
+          150,
+          1.0,
+          0,
+          0.0,
+          0,
+          1,
+          0,
+          -0.0,
+          0,
+          1.0
+        ],
+        "Material": "Slate",
+        "Color": [
+          0.48,
+          0.46,
+          0.44
+        ]
+      }
+    },
+    {
+      "name": "Step5",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [
+          56,
+          2,
+          6
+        ],
+        "CFrame": [
+          0,
+          9,
+          156,
+          1.0,
+          0,
+          0.0,
+          0,
+          1,
+          0,
+          -0.0,
+          0,
+          1.0
+        ],
+        "Material": "Slate",
+        "Color": [
+          0.48,
+          0.46,
+          0.44
+        ]
+      }
+    },
+    {
+      "name": "Step6",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [
+          56,
+          2,
+          6
+        ],
+        "CFrame": [
+          0,
+          11,
+          162,
+          1.0,
+          0,
+          0.0,
+          0,
+          1,
+          0,
+          -0.0,
+          0,
+          1.0
+        ],
+        "Material": "Slate",
+        "Color": [
+          0.48,
+          0.46,
+          0.44
+        ]
+      }
+    },
+    {
+      "name": "Step7",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [
+          56,
+          2,
+          6
+        ],
+        "CFrame": [
+          0,
+          13,
+          168,
+          1.0,
+          0,
+          0.0,
+          0,
+          1,
+          0,
+          -0.0,
+          0,
+          1.0
+        ],
+        "Material": "Slate",
+        "Color": [
+          0.48,
+          0.46,
+          0.44
+        ]
+      }
+    },
+    {
+      "name": "Step8",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [
+          56,
+          2,
+          6
+        ],
+        "CFrame": [
+          0,
+          15,
+          174,
+          1.0,
+          0,
+          0.0,
+          0,
+          1,
+          0,
+          -0.0,
+          0,
+          1.0
+        ],
+        "Material": "Slate",
+        "Color": [
+          0.48,
+          0.46,
+          0.44
+        ]
+      }
+    },
+    {
+      "name": "Step9",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [
+          56,
+          2,
+          6
+        ],
+        "CFrame": [
+          0,
+          17,
+          180,
+          1.0,
+          0,
+          0.0,
+          0,
+          1,
+          0,
+          -0.0,
+          0,
+          1.0
+        ],
+        "Material": "Slate",
+        "Color": [
+          0.48,
+          0.46,
+          0.44
+        ]
+      }
+    },
+    {
+      "name": "Step10",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [
+          56,
+          2,
+          6
+        ],
+        "CFrame": [
+          0,
+          19,
+          186,
+          1.0,
+          0,
+          0.0,
+          0,
+          1,
+          0,
+          -0.0,
+          0,
+          1.0
+        ],
+        "Material": "Slate",
+        "Color": [
+          0.48,
+          0.46,
+          0.44
+        ]
+      }
+    },
+    {
+      "name": "Step11",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [
+          56,
+          2,
+          6
+        ],
+        "CFrame": [
+          0,
+          21,
+          192,
+          1.0,
+          0,
+          0.0,
+          0,
+          1,
+          0,
+          -0.0,
+          0,
+          1.0
+        ],
+        "Material": "Slate",
+        "Color": [
+          0.48,
+          0.46,
+          0.44
+        ]
+      }
+    },
+    {
+      "name": "Step12",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [
+          56,
+          2,
+          6
+        ],
+        "CFrame": [
+          0,
+          23,
+          198,
+          1.0,
+          0,
+          0.0,
+          0,
+          1,
+          0,
+          -0.0,
+          0,
+          1.0
+        ],
+        "Material": "Slate",
+        "Color": [
+          0.48,
+          0.46,
+          0.44
+        ]
+      }
+    },
+    {
+      "name": "Belvedere",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [
+          150,
+          3,
+          110
+        ],
+        "CFrame": [
+          0,
+          24,
+          205,
+          1.0,
+          0,
+          0.0,
+          0,
+          1,
+          0,
+          -0.0,
+          0,
+          1.0
+        ],
+        "Material": "Marble",
+        "Color": [
+          0.66,
+          0.64,
+          0.6
+        ]
+      }
+    },
+    {
+      "name": "BelvedereRailN",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [
+          150,
+          4,
+          2
+        ],
+        "CFrame": [
+          0,
+          28,
+          151,
+          1.0,
+          0,
+          0.0,
+          0,
+          1,
+          0,
+          -0.0,
+          0,
+          1.0
+        ],
+        "Material": "Metal",
+        "Color": [
+          0.4,
+          0.42,
+          0.46
+        ]
+      }
+    },
+    {
+      "name": "BelvedereRailE",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [
+          2,
+          4,
+          110
+        ],
+        "CFrame": [
+          75,
+          28,
+          205,
+          1.0,
+          0,
+          0.0,
+          0,
+          1,
+          0,
+          -0.0,
+          0,
+          1.0
+        ],
+        "Material": "Metal",
+        "Color": [
+          0.4,
+          0.42,
+          0.46
+        ]
+      }
+    },
+    {
+      "name": "BelvedereRailW",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [
+          2,
+          4,
+          110
+        ],
+        "CFrame": [
+          -75,
+          28,
+          205,
+          1.0,
+          0,
+          0.0,
+          0,
+          1,
+          0,
+          -0.0,
+          0,
+          1.0
+        ],
+        "Material": "Metal",
+        "Color": [
+          0.4,
+          0.42,
+          0.46
+        ]
+      }
+    },
+    {
+      "name": "SpawnLocation",
+      "className": "SpawnLocation",
+      "properties": {
+        "Anchored": true,
+        "Size": [
+          16,
+          1,
+          16
+        ],
+        "CFrame": [
+          0,
+          1.2,
+          44,
+          1,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          1
+        ],
+        "Material": "Cobblestone",
+        "Color": [
+          0.58,
+          0.56,
+          0.53
+        ],
+        "Neutral": true,
+        "Duration": 0,
+        "CanCollide": true
+      }
+    },
+    {
+      "name": "BoundsN",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "CanCollide": true,
+        "Transparency": 1,
+        "Size": [
+          540,
+          120,
+          6
+        ],
+        "CFrame": [
+          0,
+          60,
+          -268,
+          1.0,
+          0,
+          0.0,
+          0,
+          1,
+          0,
+          -0.0,
+          0,
+          1.0
+        ]
+      }
+    },
+    {
+      "name": "BoundsS",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "CanCollide": true,
+        "Transparency": 1,
+        "Size": [
+          540,
+          120,
+          6
+        ],
+        "CFrame": [
+          0,
+          60,
+          268,
+          1.0,
+          0,
+          0.0,
+          0,
+          1,
+          0,
+          -0.0,
+          0,
+          1.0
+        ]
+      }
+    },
+    {
+      "name": "BoundsE",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "CanCollide": true,
+        "Transparency": 1,
+        "Size": [
+          6,
+          120,
+          540
+        ],
+        "CFrame": [
+          268,
+          60,
+          0,
+          1.0,
+          0,
+          0.0,
+          0,
+          1,
+          0,
+          -0.0,
+          0,
+          1.0
+        ]
+      }
+    },
+    {
+      "name": "BoundsW",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "CanCollide": true,
+        "Transparency": 1,
+        "Size": [
+          6,
+          120,
+          540
+        ],
+        "CFrame": [
+          -268,
+          60,
+          0,
+          1.0,
+          0,
+          0.0,
+          0,
+          1,
+          0,
+          -0.0,
+          0,
+          1.0
+        ]
+      }
+    }
+  ]
+}

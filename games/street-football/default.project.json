@@ -1,0 +1,91 @@
+{
+  "name": "street-football",
+  "tree": {
+    "$className": "DataModel",
+    "ReplicatedStorage": {
+      "$className": "ReplicatedStorage",
+      "Shared": { "$path": "src/shared" },
+      "Packages": { "$path": { "optional": "../../Packages" } }
+    },
+    "ServerScriptService": {
+      "$className": "ServerScriptService",
+      "Server": { "$path": "src/server" },
+      "ServerPackages": { "$path": { "optional": "../../ServerPackages" } }
+    },
+    "StarterPlayer": {
+      "$className": "StarterPlayer",
+      "StarterPlayerScripts": {
+        "$className": "StarterPlayerScripts",
+        "Client": { "$path": "src/client" }
+      }
+    },
+    "Workspace": {
+      "$className": "Workspace",
+      "$properties": { "FilteringEnabled": true },
+      "Generated": { "$path": "src/workspace" }
+    },
+    "Lighting": {
+      "$className": "Lighting",
+      "$properties": {
+        "Ambient": [0.29, 0.31, 0.36],
+        "OutdoorAmbient": [0.44, 0.47, 0.53],
+        "Brightness": 2.4,
+        "ClockTime": 16.5,
+        "GeographicLatitude": 24,
+        "ExposureCompensation": 0.18,
+        "FogColor": [0.66, 0.74, 0.84],
+        "FogEnd": 1400,
+        "FogStart": 320,
+        "GlobalShadows": true,
+        "EnvironmentDiffuseScale": 0.72,
+        "EnvironmentSpecularScale": 0.55,
+        "ShadowSoftness": 0.35
+      },
+      "Atmosphere": {
+        "$className": "Atmosphere",
+        "$properties": {
+          "Density": 0.32,
+          "Offset": 0.1,
+          "Color": [0.78, 0.82, 0.88],
+          "Decay": [0.42, 0.5, 0.62],
+          "Glare": 0.28,
+          "Haze": 1.4
+        }
+      },
+      "Bloom": {
+        "$className": "BloomEffect",
+        "$properties": { "Intensity": 0.55, "Size": 26, "Threshold": 1.05 }
+      },
+      "SunRays": {
+        "$className": "SunRaysEffect",
+        "$properties": { "Intensity": 0.14, "Spread": 0.9 }
+      },
+      "ColorGrade": {
+        "$className": "ColorCorrectionEffect",
+        "$properties": {
+          "Brightness": 0.015,
+          "Contrast": 0.14,
+          "Saturation": 0.16,
+          "TintColor": [1, 0.99, 0.96]
+        }
+      },
+      "Depth": {
+        "$className": "DepthOfFieldEffect",
+        "$properties": {
+          "FarIntensity": 0.12,
+          "FocusDistance": 90,
+          "InFocusRadius": 220,
+          "NearIntensity": 0
+        }
+      },
+      "Sky": {
+        "$className": "Sky",
+        "$properties": { "StarCount": 0, "SunAngularSize": 12 }
+      }
+    },
+    "SoundService": {
+      "$className": "SoundService",
+      "$properties": { "RespectFilteringEnabled": true }
+    }
+  }
+}
