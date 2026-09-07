@@ -207,6 +207,11 @@ class ApiError(RuntimeError):
                 "verifie les permissions de la cle sur le Creator Dashboard"
             )
         if self.status == 404:
+            if "/assets/" in self.url:
+                return (
+                    "asset introuvable, prive, ou hors de portee de la cle "
+                    "(le scope asset ne couvre que tes propres assets)"
+                )
             return "ressource introuvable : universeId / placeId probablement faux"
         if self.status == 409:
             # Le message de Roblox ("Server is busy") est trompeur : la cause
