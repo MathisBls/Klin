@@ -69,11 +69,22 @@ def redact(text: str, secret: str | None) -> str:
 # Configuration (.env)
 # --------------------------------------------------------------------------
 
+ENV_KEYS = (
+    "ROBLOX_API_KEY",
+    "ROBLOX_UNIVERSE_ID",
+    "ROBLOX_PLACE_ID",
+    "ROBLOX_CREATOR_USER_ID",
+    "ROBLOX_CREATOR_GROUP_ID",
+)
+
+
 @dataclass(frozen=True)
 class Config:
     api_key: str
     universe_id: str
     place_id: str
+    creator_user_id: str = ""
+    creator_group_id: str = ""
 
     @property
     def has_universe(self) -> bool:
@@ -82,6 +93,20 @@ class Config:
     @property
     def has_place(self) -> bool:
         return bool(self.place_id)
+
+    def creator(self) -> dict[str, str]:
+        """Bloc `creator` attendu par l'Assets API. Le groupe prime s'il existe."""
+        if self.creator_group_id:
+            return {"groupId": self.creator_group_id}
+        if self.creator_user_id:
+            return {"userId": self.creator_user_id}
+        fail(
+            "upload d'asset impossible : ni ROBLOX_CREATOR_USER_ID ni "
+            "ROBLOX_CREATOR_GROUP_ID dans .env\n"
+            "       -> mets ton userId Roblox (ou le groupId si le jeu "
+            "appartient a un groupe)"
+        )
+        raise AssertionError("unreachable")  # pour le typage
 
 
 def _parse_env_file(path: Path) -> dict[str, str]:
@@ -108,7 +133,7 @@ def _parse_env_file(path: Path) -> dict[str, str]:
 def load_config(require: tuple[str, ...] = ("ROBLOX_API_KEY",)) -> Config:
     """Charge .env puis l'environnement (l'environnement gagne, utile en CI)."""
     values = _parse_env_file(ROOT / ".env")
-    for key in ("ROBLOX_API_KEY", "ROBLOX_UNIVERSE_ID", "ROBLOX_PLACE_ID"):
+    for key in ENV_KEYS:
         if os.environ.get(key):
             values[key] = os.environ[key]
 
@@ -124,6 +149,8 @@ def load_config(require: tuple[str, ...] = ("ROBLOX_API_KEY",)) -> Config:
         api_key=values.get("ROBLOX_API_KEY", ""),
         universe_id=values.get("ROBLOX_UNIVERSE_ID", ""),
         place_id=values.get("ROBLOX_PLACE_ID", ""),
+        creator_user_id=values.get("ROBLOX_CREATOR_USER_ID", ""),
+        creator_group_id=values.get("ROBLOX_CREATOR_GROUP_ID", ""),
     )
 
 
@@ -280,6 +307,54 @@ class OpenCloud:
 # --------------------------------------------------------------------------
 # Utilitaires partages
 # --------------------------------------------------------------------------
+
+def encode_multipart(
+    fields: dict[str, str], files: dict[str, tuple[str, bytes, str]]
+) -> tuple[bytes, str]:
+    """Encode un corps multipart/form-data. Retourne (corps, content-type).
+
+    `files` : nom du champ -> (nom de fichier, contenu, type MIME).
+    Ecrit a la main pour garder les scripts sur la stdlib seule.
+    """
+    boundary = f"----klin{random.getrandbits(64):016x}"
+    parts: list[bytes] = []
+
+    for name, value in fields.items():
+        parts.append(
+            f"--{boundary}\r\n"
+            f'Content-Disposition: form-data; name="{name}"\r\n\r\n'
+            f"{value}\r\n".encode("utf-8")
+        )
+
+    for name, (filename, content, mime) in files.items():
+        parts.append(
+            f"--{boundary}\r\n"
+            f'Content-Disposition: form-data; name="{name}"; '
+            f'filename="{filename}"\r\n'
+            f"Content-Type: {mime}\r\n\r\n".encode("utf-8")
+        )
+        parts.append(content)
+        parts.append(b"\r\n")
+
+    parts.append(f"--{boundary}--\r\n".encode("utf-8"))
+    return b"".join(parts), f"multipart/form-data; boundary={boundary}"
+
+
+def read_json(path: Path, default: Any = None) -> Any:
+    """Lit un JSON, ou renvoie `default` si le fichier n'existe pas."""
+    if not path.is_file():
+        return default
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def write_json(path: Path, data: Any) -> None:
+    """Ecrit un JSON stable (trie, indente) pour des diffs git lisibles."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(
+        json.dumps(data, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+
 
 def add_common_args(parser) -> None:
     """Arguments communs a tous les scripts du pipeline."""
