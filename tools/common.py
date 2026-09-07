@@ -1,0 +1,302 @@
+"""Socle commun des scripts pipeline : config, client Open Cloud, logs.
+
+Tout appel HTTP vers Roblox passe par ici. Regles :
+  - la cle API n'est jamais affichee ni loggee (voir `redact`)
+  - les erreurs 429 et 5xx sont retentees avec backoff, le reste remonte
+  - chaque script sort avec un code != 0 en cas d'echec, pour le Makefile
+"""
+
+from __future__ import annotations
+
+import json
+import os
+import random
+import sys
+import time
+import urllib.error
+import urllib.parse
+import urllib.request
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Any
+
+ROOT = Path(__file__).resolve().parent.parent
+API_HOST = "https://apis.roblox.com"
+
+# Nombre de tentatives sur les erreurs transitoires (429, 5xx, reseau).
+MAX_RETRIES = 5
+BASE_BACKOFF = 1.0
+
+
+# --------------------------------------------------------------------------
+# Logs (tout sur stderr, pour que stdout reste exploitable en --json)
+# --------------------------------------------------------------------------
+
+def _stderr(prefix: str, message: str) -> None:
+    print(f"{prefix} {message}", file=sys.stderr, flush=True)
+
+
+def info(message: str) -> None:
+    _stderr("[info]", message)
+
+
+def ok(message: str) -> None:
+    _stderr("[ok]  ", message)
+
+
+def warn(message: str) -> None:
+    _stderr("[warn]", message)
+
+
+def error(message: str) -> None:
+    _stderr("[err] ", message)
+
+
+def fail(message: str, code: int = 1) -> None:
+    """Arrete le script avec un message et un code de sortie non nul."""
+    error(message)
+    raise SystemExit(code)
+
+
+def redact(text: str, secret: str | None) -> str:
+    """Remplace le secret par un masque partout ou il apparait."""
+    if not secret or len(secret) < 8:
+        return text
+    return text.replace(secret, f"{secret[:4]}...{secret[-4:]}")
+
+
+# --------------------------------------------------------------------------
+# Configuration (.env)
+# --------------------------------------------------------------------------
+
+@dataclass(frozen=True)
+class Config:
+    api_key: str
+    universe_id: str
+    place_id: str
+
+    @property
+    def has_universe(self) -> bool:
+        return bool(self.universe_id)
+
+    @property
+    def has_place(self) -> bool:
+        return bool(self.place_id)
+
+
+def _parse_env_file(path: Path) -> dict[str, str]:
+    """Parseur .env minimal : KEY=VALUE, # en commentaire, quotes optionnelles."""
+    values: dict[str, str] = {}
+    if not path.is_file():
+        return values
+
+    for raw in path.read_text(encoding="utf-8-sig").splitlines():
+        line = raw.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        key, _, value = line.partition("=")
+        key = key.strip()
+        if key.startswith("export "):
+            key = key[len("export "):].strip()
+        value = value.strip()
+        if len(value) >= 2 and value[0] == value[-1] and value[0] in ("'", '"'):
+            value = value[1:-1]
+        values[key] = value
+    return values
+
+
+def load_config(require: tuple[str, ...] = ("ROBLOX_API_KEY",)) -> Config:
+    """Charge .env puis l'environnement (l'environnement gagne, utile en CI)."""
+    values = _parse_env_file(ROOT / ".env")
+    for key in ("ROBLOX_API_KEY", "ROBLOX_UNIVERSE_ID", "ROBLOX_PLACE_ID"):
+        if os.environ.get(key):
+            values[key] = os.environ[key]
+
+    missing = [key for key in require if not values.get(key)]
+    if missing:
+        fail(
+            "variables manquantes dans .env : "
+            + ", ".join(missing)
+            + "\n       -> copie .env.example en .env et remplis-les"
+        )
+
+    return Config(
+        api_key=values.get("ROBLOX_API_KEY", ""),
+        universe_id=values.get("ROBLOX_UNIVERSE_ID", ""),
+        place_id=values.get("ROBLOX_PLACE_ID", ""),
+    )
+
+
+# --------------------------------------------------------------------------
+# Client HTTP Open Cloud
+# --------------------------------------------------------------------------
+
+class ApiError(RuntimeError):
+    """Erreur renvoyee par l'API Roblox, avec le status et le corps."""
+
+    def __init__(self, status: int, body: str, method: str, url: str) -> None:
+        self.status = status
+        self.body = body
+        self.method = method
+        self.url = url
+        super().__init__(f"{method} {url} -> HTTP {status}\n{body}")
+
+    def explain(self) -> str:
+        """Traduit les codes les plus frequents en cause probable."""
+        if self.status == 400:
+            return "requete refusee : corps ou parametre invalide"
+        if self.status == 401:
+            return "cle API invalide ou absente (header x-api-key)"
+        if self.status == 403:
+            return (
+                "cle valide mais scope manquant, ou restriction IP active - "
+                "verifie les permissions de la cle sur le Creator Dashboard"
+            )
+        if self.status == 404:
+            return "ressource introuvable : universeId / placeId probablement faux"
+        if self.status == 429:
+            return "quota depasse, reessaie plus tard"
+        return "voir le corps de la reponse ci-dessus"
+
+
+class OpenCloud:
+    """Client Open Cloud. Une instance par script."""
+
+    def __init__(self, config: Config, dry_run: bool = False) -> None:
+        self.config = config
+        self.dry_run = dry_run
+
+    def request(
+        self,
+        method: str,
+        path: str,
+        *,
+        body: Any = None,
+        raw_body: bytes | None = None,
+        content_type: str | None = None,
+        query: dict[str, Any] | None = None,
+        expect_json: bool = True,
+    ) -> Any:
+        """Appel HTTP avec retry. `path` est relatif a apis.roblox.com."""
+        url = path if path.startswith("http") else f"{API_HOST}{path}"
+        if query:
+            pairs = [
+                f"{key}={urllib.parse.quote(str(value))}"
+                for key, value in query.items()
+                if value is not None
+            ]
+            if pairs:
+                url += ("&" if "?" in url else "?") + "&".join(pairs)
+
+        payload = raw_body
+        headers = {
+            "x-api-key": self.config.api_key,
+            "Accept": "application/json",
+            "User-Agent": "klin-pipeline/0.1",
+        }
+        if body is not None:
+            payload = json.dumps(body).encode("utf-8")
+            headers["Content-Type"] = "application/json"
+        if content_type:
+            headers["Content-Type"] = content_type
+
+        if self.dry_run and method.upper() not in ("GET", "HEAD"):
+            info(f"[dry-run] {method.upper()} {url}")
+            if body is not None:
+                info(f"[dry-run] corps : {json.dumps(body, ensure_ascii=False)}")
+            return {"dryRun": True}
+
+        last_error: Exception | None = None
+
+        for attempt in range(1, MAX_RETRIES + 1):
+            request = urllib.request.Request(
+                url, data=payload, headers=headers, method=method.upper()
+            )
+            try:
+                with urllib.request.urlopen(request, timeout=120) as response:
+                    text = response.read().decode("utf-8", errors="replace")
+                    if not expect_json or not text.strip():
+                        return text
+                    return json.loads(text)
+
+            except urllib.error.HTTPError as exc:
+                text = redact(
+                    exc.read().decode("utf-8", errors="replace"), self.config.api_key
+                )
+                transient = exc.code == 429 or 500 <= exc.code < 600
+                if transient and attempt < MAX_RETRIES:
+                    delay = self._retry_delay(exc, attempt)
+                    warn(
+                        f"HTTP {exc.code} sur {method.upper()} {url} - "
+                        f"retry dans {delay:.1f}s ({attempt}/{MAX_RETRIES - 1})"
+                    )
+                    time.sleep(delay)
+                    last_error = exc
+                    continue
+                raise ApiError(exc.code, text, method.upper(), url) from None
+
+            except urllib.error.URLError as exc:
+                if attempt < MAX_RETRIES:
+                    delay = self._retry_delay(None, attempt)
+                    warn(f"erreur reseau ({exc.reason}) - retry dans {delay:.1f}s")
+                    time.sleep(delay)
+                    last_error = exc
+                    continue
+                raise
+
+        raise RuntimeError(f"echec apres {MAX_RETRIES} tentatives : {last_error}")
+
+    @staticmethod
+    def _retry_delay(exc: urllib.error.HTTPError | None, attempt: int) -> float:
+        """Backoff exponentiel avec jitter, sauf si l'API impose Retry-After."""
+        if exc is not None and exc.headers is not None:
+            retry_after = exc.headers.get("Retry-After")
+            if retry_after:
+                try:
+                    return float(retry_after)
+                except ValueError:
+                    pass
+        return BASE_BACKOFF * (2 ** (attempt - 1)) + random.uniform(0, 0.5)
+
+    def poll_operation(
+        self, operation_path: str, *, timeout: float = 180.0, interval: float = 2.0
+    ) -> dict[str, Any]:
+        """Attend la fin d'une operation longue Open Cloud (`done: true`)."""
+        if not operation_path.startswith(("/", "http")):
+            operation_path = "/" + operation_path
+
+        deadline = time.monotonic() + timeout
+        while time.monotonic() < deadline:
+            result = self.request("GET", operation_path)
+            if isinstance(result, dict) and result.get("done"):
+                if result.get("error"):
+                    raise RuntimeError(f"operation en echec : {result['error']}")
+                return result
+            time.sleep(interval)
+
+        raise TimeoutError(f"operation toujours en cours apres {timeout:.0f}s")
+
+
+# --------------------------------------------------------------------------
+# Utilitaires partages
+# --------------------------------------------------------------------------
+
+def add_common_args(parser) -> None:
+    """Arguments communs a tous les scripts du pipeline."""
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="n'effectue aucune ecriture, affiche ce qui serait envoye",
+    )
+    parser.add_argument(
+        "--json",
+        dest="as_json",
+        action="store_true",
+        help="sortie machine sur stdout (les logs restent sur stderr)",
+    )
+
+
+def emit(data: Any, as_json: bool) -> None:
+    """Sortie finale sur stdout. Les logs vont sur stderr, jamais ici."""
+    if as_json:
+        print(json.dumps(data, ensure_ascii=False, indent=2))

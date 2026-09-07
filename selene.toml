@@ -1,0 +1,8 @@
+std = "roblox"
+
+[rules]
+# Le typage strict Luau couvre deja une partie ; on garde selene sur les vrais pieges.
+shadowing = "warn"
+unused_variable = "warn"
+undefined_variable = "deny"
+incorrect_standard_library_use = "deny"

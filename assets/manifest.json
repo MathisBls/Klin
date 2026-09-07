@@ -1,0 +1,5 @@
+{
+  "$comment": "Assets du jeu. `make assets` resout ce fichier et injecte les IDs dans src/shared/Config.luau. Deux modes: 'id' (asset deja sur Roblox, insertion directe) ou 'upload' (fichier local pousse via l'Assets API Open Cloud).",
+  "version": 1,
+  "assets": []
+}

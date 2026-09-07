@@ -1,0 +1,13 @@
+[package]
+name = "mathisbls/klin"
+version = "0.1.0"
+registry = "https://github.com/UpliftGames/wally-index"
+realm = "shared"
+
+# Les dependances arrivent avec le premier jeu genere (Promise, ProfileStore...).
+# On garde le fichier vide pour que `wally install` soit deja cablé dans le Makefile.
+[dependencies]
+
+[server-dependencies]
+
+[dev-dependencies]
