@@ -1,5 +1,16 @@
 {
-  "$comment": "Catalogue de monetisation. `make products` cree ou met a jour ces entrees sur Roblox et ecrit leurs IDs dans products.lock.json, puis dans Config.luau. La cle (ex: SMALL_COINS) est le nom stable utilise dans le code Luau ; le champ 'name' est ce que voit le joueur et peut changer sans casser le code.",
-  "developerProducts": {},
+  "$comment": "Catalogue de monetisation de forge-clicker. `make products` cree ou met a jour ces entrees sur Roblox et ecrit leurs IDs dans products.lock.json, puis dans Config.luau. La cle est le nom stable utilise dans le code Luau ; 'name' est ce que voit le joueur et peut changer sans casser le code.",
+  "developerProducts": {
+    "SHARDS_POUCH": {
+      "name": "Bourse d'eclats",
+      "description": "10 000 eclats, soit environ 20 minutes de forge a mi-parcours.",
+      "price": 25
+    },
+    "EXTRA_SPIN": {
+      "name": "Tour supplementaire",
+      "description": "Un tour de roue immediat, sans attendre le cooldown.",
+      "price": 15
+    }
+  },
   "gamePasses": {}
 }

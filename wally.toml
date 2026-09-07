@@ -8,6 +8,10 @@ realm = "shared"
 # On garde le fichier vide pour que `wally install` soit deja cablé dans le Makefile.
 [dependencies]
 
+# ProfileStore reste cote serveur : le client n'a aucune raison de voir la
+# couche de persistance, et l'exposer en ReplicatedStorage donnerait a un
+# exploit la carte de la structure des profils.
 [server-dependencies]
+ProfileStore = "lm-loleris/profilestore@1.0.3"
 
 [dev-dependencies]

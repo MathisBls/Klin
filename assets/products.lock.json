@@ -1,0 +1,15 @@
+{
+  "developerProducts": {
+    "EXTRA_SPIN": {
+      "name": "Tour supplementaire",
+      "price": 15,
+      "productId": 3711754780
+    },
+    "SHARDS_POUCH": {
+      "name": "Bourse d'eclats",
+      "price": 25,
+      "productId": 3711754781
+    }
+  },
+  "gamePasses": {}
+}

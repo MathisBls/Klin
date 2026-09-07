@@ -16,7 +16,10 @@ local Config: Config = {
 	-- cle logique -> rbxassetid://
 	assets = {},
 	-- cle logique -> productId
-	developerProducts = {},
+	developerProducts = {
+		EXTRA_SPIN = 3711754780,
+		SHARDS_POUCH = 3711754781,
+	},
 	-- cle logique -> gamePassId
 	gamePasses = {},
 }

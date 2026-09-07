@@ -1,0 +1,165 @@
+{
+  "className": "Model",
+  "children": [
+    {
+      "name": "Floor",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [60, 4, 60],
+        "CFrame": [0, -2, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1],
+        "Material": "Slate",
+        "Color": [0.13, 0.13, 0.15],
+        "TopSurface": "Smooth",
+        "BottomSurface": "Smooth"
+      }
+    },
+    {
+      "name": "WallNorth",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [60, 20, 2],
+        "CFrame": [0, 10, -30, 1, 0, 0, 0, 1, 0, 0, 0, 1],
+        "Material": "Brick",
+        "Color": [0.09, 0.09, 0.11]
+      }
+    },
+    {
+      "name": "WallSouth",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [60, 20, 2],
+        "CFrame": [0, 10, 30, 1, 0, 0, 0, 1, 0, 0, 0, 1],
+        "Material": "Brick",
+        "Color": [0.09, 0.09, 0.11]
+      }
+    },
+    {
+      "name": "WallEast",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [2, 20, 60],
+        "CFrame": [30, 10, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1],
+        "Material": "Brick",
+        "Color": [0.09, 0.09, 0.11]
+      }
+    },
+    {
+      "name": "WallWest",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [2, 20, 60],
+        "CFrame": [-30, 10, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1],
+        "Material": "Brick",
+        "Color": [0.09, 0.09, 0.11]
+      }
+    },
+    {
+      "name": "AnvilBase",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [4, 3, 4],
+        "CFrame": [0, 1.5, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1],
+        "Material": "WoodPlanks",
+        "Color": [0.24, 0.16, 0.11]
+      }
+    },
+    {
+      "name": "Anvil",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [5, 2, 3],
+        "CFrame": [0, 4, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1],
+        "Material": "Metal",
+        "Color": [0.18, 0.18, 0.2],
+        "Reflectance": 0.15
+      },
+      "children": [
+        {
+          "name": "Glow",
+          "className": "PointLight",
+          "properties": {
+            "Brightness": 3,
+            "Range": 18,
+            "Color": [1, 0.45, 0.1]
+          }
+        },
+        {
+          "name": "ClickDetector",
+          "className": "ClickDetector",
+          "properties": {
+            "MaxActivationDistance": 24,
+            "CursorIcon": ""
+          }
+        }
+      ]
+    },
+    {
+      "name": "Forge",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Size": [8, 6, 4],
+        "CFrame": [0, 3, -12, 1, 0, 0, 0, 1, 0, 0, 0, 1],
+        "Material": "Cobblestone",
+        "Color": [0.16, 0.13, 0.12]
+      },
+      "children": [
+        {
+          "name": "Fire",
+          "className": "Part",
+          "properties": {
+            "Anchored": true,
+            "CanCollide": false,
+            "Size": [5, 2, 2],
+            "CFrame": [0, 4.5, -10.5, 1, 0, 0, 0, 1, 0, 0, 0, 1],
+            "Material": "Neon",
+            "Color": [1, 0.42, 0.08]
+          },
+          "children": [
+            {
+              "name": "Heat",
+              "className": "PointLight",
+              "properties": {
+                "Brightness": 5,
+                "Range": 30,
+                "Color": [1, 0.4, 0.1]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "SpawnLocation",
+      "className": "SpawnLocation",
+      "properties": {
+        "Anchored": true,
+        "Size": [6, 1, 6],
+        "CFrame": [0, 0.5, 8, 1, 0, 0, 0, 1, 0, 0, 0, 1],
+        "Material": "Slate",
+        "Color": [0.2, 0.2, 0.22],
+        "Neutral": true,
+        "Duration": 0,
+        "CanCollide": true
+      }
+    },
+    {
+      "name": "Bounds",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "CanCollide": true,
+        "Transparency": 1,
+        "Size": [64, 2, 64],
+        "CFrame": [0, 24, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1]
+      }
+    }
+  ]
+}

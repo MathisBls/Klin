@@ -8,7 +8,7 @@ hook. Deux sur trois ne suffit pas.
 
 | Slug | Mécanique principale | Thème | Hook des 10 premières secondes | Sortie | État |
 |---|---|---|---|---|---|
-| _(aucun jeu publié)_ | | | | | |
+| `forge-clicker` | cliquer (enclume) | atelier de forge | enclume à 6 studs du spawn, pulsante ; le premier clic fait jaillir un `+1` | 2026-09-07 | publié |
 
 ## États possibles
 
@@ -26,8 +26,8 @@ Liste à plat, pour vérifier d'un coup d'œil ce qui est pris. Une mécanique
 présente ici est interdite pour un nouveau jeu, sauf en mode `itération` sur le
 jeu qui la porte.
 
-_(vide)_
+- **cliquer un objet du décor** — `forge-clicker`
 
 ## Hooks déjà utilisés
 
-_(vide)_
+- **objet interactif à portée immédiate du spawn, sans menu ni texte** — `forge-clicker`
