@@ -46,25 +46,28 @@
       "$className": "Lighting",
       "$properties": {
         "Ambient": [
-          0.06,
-          0.05,
-          0.06
+          0.35,
+          0.35,
+          0.38
         ],
         "OutdoorAmbient": [
-          0.08,
-          0.06,
-          0.06
+          0.5,
+          0.5,
+          0.53
         ],
-        "Brightness": 1,
-        "ClockTime": 2,
+        "Brightness": 2.5,
+        "ClockTime": 14,
+        "GeographicLatitude": 42,
         "FogColor": [
-          0.08,
-          0.05,
-          0.05
+          0.75,
+          0.82,
+          0.88
         ],
-        "FogEnd": 120,
-        "FogStart": 20,
-        "GlobalShadows": true
+        "FogEnd": 900,
+        "FogStart": 250,
+        "GlobalShadows": true,
+        "EnvironmentDiffuseScale": 0.6,
+        "EnvironmentSpecularScale": 0.4
       }
     },
     "SoundService": {

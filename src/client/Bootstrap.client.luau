@@ -297,16 +297,36 @@ feedbackRemote.OnClientEvent:Connect(showFloatingGain)
 -- Entrees
 -- --------------------------------------------------------------------------
 
-local function connectAnvil()
-	local anvil = Workspace:WaitForChild("Forge", 20)
-	if anvil == nil then
-		warn("[Klin] enclume introuvable dans Workspace")
-		return
-	end
+--[[
+	Branche le clic sur l'enclume.
 
-	local detector = anvil:FindFirstChildWhichIsA("ClickDetector", true)
+	Recherche RECURSIVE, volontairement. Une premiere version faisait
+	`Workspace:WaitForChild("Forge")`, qui n'est pas recursif : le modele
+	vit sous Workspace.Generated (le mapping Rojo de src/workspace), donc
+	l'appel ne trouvait jamais rien et le clic n'etait jamais branche. Le
+	jeu paraissait fonctionner puisque la roue, elle, donnait des eclats.
+
+	Passer par une recherche recursive decouple aussi le client du mapping
+	Rojo : deplacer le dossier ne cassera plus le clic.
+]]
+local function waitForClickDetector(timeout: number): ClickDetector?
+	local deadline = os.clock() + timeout
+
+	repeat
+		local detector = Workspace:FindFirstChildWhichIsA("ClickDetector", true)
+		if detector then
+			return detector
+		end
+		task.wait(0.2)
+	until os.clock() > deadline
+
+	return nil
+end
+
+local function connectAnvil()
+	local detector = waitForClickDetector(20)
 	if detector == nil then
-		warn("[Klin] ClickDetector absent de l'enclume")
+		warn("[Klin] aucun ClickDetector dans Workspace - le jeu est injouable")
 		return
 	end
 

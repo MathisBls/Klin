@@ -14,7 +14,9 @@ export type Config = {
 
 local Config: Config = {
 	-- cle logique -> rbxassetid://
-	assets = {},
+	assets = {
+		WHEEL_DISC = "rbxassetid://131702228853518",
+	},
 	-- cle logique -> productId
 	developerProducts = {
 		EXTRA_SPIN = 3711754780,

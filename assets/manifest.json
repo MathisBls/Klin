@@ -1,5 +1,13 @@
 {
-  "$comment": "Assets du jeu. `make assets` resout ce fichier et injecte les IDs dans src/shared/Config.luau. Deux modes: 'id' (asset deja sur Roblox, insertion directe) ou 'upload' (fichier local pousse via l'Assets API Open Cloud).",
+  "$comment": "Assets du jeu. `make assets` resout ce fichier et injecte les IDs dans src/shared/Config.luau. Deux modes : 'assetId' (asset deja sur Roblox, insertion directe) ou 'file' (fichier local pousse via l'Assets API Open Cloud).",
   "version": 1,
-  "assets": []
+  "assets": [
+    {
+      "key": "WHEEL_DISC",
+      "type": "Image",
+      "file": "assets/files/wheel.png",
+      "displayName": "Roue de la forge",
+      "description": "Disque a six secteurs ponderes, genere par tools/gen_wheel.py. Les angles doivent rester alignes sur GameConfig.wheel.prizes."
+    }
+  ]
 }

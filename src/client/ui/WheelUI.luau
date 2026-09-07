@@ -14,26 +14,30 @@
 	   on calcule l'angle qui met ce secteur sous l'aiguille, et on anime
 	   jusque-la. La roue est une mise en scene d'un resultat deja acquis.
 
-	DESSIN SANS ASSET
+	RENDU
 
-	Roblox ne sait pas dessiner un secteur circulaire nativement, et uploader
-	une image imposerait un passage en moderation. Chaque secteur est donc
-	rempli de fines lames rectangulaires partant du centre, posees tous les
-	deux degres. Au bord du disque, deux degres font environ 5 pixels : une
-	lame de 8 pixels de large couvre l'intervalle sans laisser de trou.
+	Le disque est une image uploadee (assets/files/wheel.png, generee par
+	tools/gen_wheel.py et poussee par `make assets`). Une premiere version
+	dessinait les secteurs avec 186 Frames rectangulaires : Roblox fait
+	pivoter un GuiObject autour de son centre et non de son AnchorPoint, si
+	bien que les lames decrivaient un cercle decale au lieu de rayonner
+	depuis le centre. Une image ne peut pas se tromper la-dessus.
+
+	L'image et GameConfig.wheel.prizes doivent rester alignes : les bornes
+	angulaires sont codees dans tools/gen_wheel.py. Changer un poids sans
+	regenerer l'image ferait tomber l'aiguille sur le mauvais secteur.
 ]]
 
 local TweenService = game:GetService("TweenService")
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Config = require(ReplicatedStorage.Shared.Config)
 local GameConfig = require(ReplicatedStorage.Shared.config.GameConfig)
 
 local WheelUI = {}
 WheelUI.__index = WheelUI
 
 local RADIUS = 150
-local BLADE_STEP = 2
-local BLADE_WIDTH = 8
 local FULL_TURNS = 5
 
 local PANEL = Color3.fromRGB(22, 20, 24)
@@ -105,21 +109,6 @@ local function corner(instance: Instance, radius: UDim)
 	uiCorner.Parent = instance
 end
 
---[[
-	Une lame : rectangle ancre par son bord bas au centre du disque, tourne
-	de `angle`. A rotation nulle il pointe vers le haut.
-]]
-local function makeBlade(parent: Instance, angle: number, color: Color3)
-	local blade = Instance.new("Frame")
-	blade.Size = UDim2.fromOffset(BLADE_WIDTH, RADIUS)
-	blade.Position = UDim2.fromScale(0.5, 0.5)
-	blade.AnchorPoint = Vector2.new(0.5, 1)
-	blade.Rotation = angle
-	blade.BackgroundColor3 = color
-	blade.BorderSizePixel = 0
-	blade.Parent = parent
-end
-
 function WheelUI.new(parentGui: ScreenGui)
 	local self = setmetatable({}, WheelUI)
 
@@ -156,58 +145,31 @@ function WheelUI.new(parentGui: ScreenGui)
 	stage.ZIndex = 11
 	stage.Parent = panel
 
-	-- Le disque tournant. Tout ce qui est dedans tourne avec lui.
-	local disc = Instance.new("Frame")
+	-- Le disque tournant : une seule ImageLabel. Les etiquettes de
+	-- pourcentage sont dans l'image, donc rien a positionner ici.
+	local disc = Instance.new("ImageLabel")
 	disc.Name = "Disc"
 	disc.Size = UDim2.fromOffset(RADIUS * 2, RADIUS * 2)
 	disc.Position = UDim2.fromScale(0.5, 0.5)
 	disc.AnchorPoint = Vector2.new(0.5, 0.5)
-	disc.BackgroundColor3 = Color3.fromRGB(14, 13, 16)
+	disc.BackgroundTransparency = 1
 	disc.BorderSizePixel = 0
-	disc.ClipsDescendants = true
+	disc.Image = Config.assets.WHEEL_DISC or ""
 	disc.ZIndex = 11
 	disc.Parent = stage
-	corner(disc, UDim.new(0.5, 0))
 	self.disc = disc
 
-	for _, segment in self.segments do
-		local angle = segment.startAngle
-		-- On depasse legerement la fin du secteur pour que deux secteurs
-		-- voisins se touchent sans laisser de liseré de fond.
-		while angle < segment.startAngle + segment.sweep do
-			makeBlade(disc, angle, segment.color)
-			angle += BLADE_STEP
-		end
-		makeBlade(disc, segment.startAngle + segment.sweep, segment.color)
+	if Config.assets.WHEEL_DISC == nil then
+		-- Sans l'asset, la roue tournerait a vide sans que personne ne
+		-- comprenne pourquoi. Un fond visible et un avertissement valent
+		-- mieux qu'un disque invisible.
+		disc.BackgroundTransparency = 0
+		disc.BackgroundColor3 = Color3.fromRGB(40, 37, 44)
+		corner(disc, UDim.new(0.5, 0))
+		warn("[WheelUI] asset WHEEL_DISC absent de Config - lance make assets")
 	end
 
-	-- Etiquettes : seulement sur les secteurs assez larges pour les porter.
-	-- Sur un secteur a 2 %, un texte serait illisible ; la legende s'en
-	-- charge.
-	for _, segment in self.segments do
-		if segment.sweep >= 30 then
-			local label = Instance.new("TextLabel")
-			label.Size = UDim2.fromOffset(90, 20)
-			label.AnchorPoint = Vector2.new(0.5, 0.5)
-
-			local radians = math.rad(segment.centerAngle - 90)
-			local distance = RADIUS * 0.62
-			label.Position =
-				UDim2.new(0.5, math.cos(radians) * distance, 0.5, math.sin(radians) * distance)
-
-			label.BackgroundTransparency = 1
-			label.Font = Enum.Font.GothamBold
-			label.TextSize = 12
-			label.TextColor3 = Color3.new(1, 1, 1)
-			label.TextStrokeTransparency = 0.5
-			label.Text = `{math.floor(segment.weight)}%`
-			label.Rotation = segment.centerAngle
-			label.ZIndex = 12
-			label.Parent = disc
-		end
-	end
-
-	-- Moyeu, pour cacher la convergence des lames au centre.
+	-- Moyeu : masque le point de convergence des secteurs.
 	local hub = Instance.new("Frame")
 	hub.Size = UDim2.fromOffset(56, 56)
 	hub.Position = UDim2.fromScale(0.5, 0.5)

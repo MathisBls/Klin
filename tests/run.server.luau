@@ -104,16 +104,49 @@ test("Wheel.draw ne renvoie que des lots declares", function()
 	end
 end)
 
-test("la map contient l'enclume et un spawn", function()
-	local forge = workspace:FindFirstChild("Forge", true)
-	assertTrue(forge ~= nil, "enclume introuvable dans Workspace")
-	assertTrue(
-		forge:FindFirstChildWhichIsA("ClickDetector", true) ~= nil,
-		"ClickDetector absent de l'enclume : le jeu serait injouable"
-	)
+test("le clic est branchable exactement comme le fait le client", function()
+	-- Ce test rejoue LA MEME recherche que src/client/Bootstrap.client.luau.
+	-- Une version precedente cherchait ici en recursif alors que le client
+	-- faisait un WaitForChild non recursif sur Workspace : le test passait,
+	-- le clic ne marchait pas, et personne ne s'en apercevait puisque la
+	-- roue donnait quand meme des eclats.
+	--
+	-- Regle : un test de cablage doit emprunter le chemin du client, pas un
+	-- chemin plus permissif.
+	local detector = workspace:FindFirstChildWhichIsA("ClickDetector", true)
+	assertTrue(detector ~= nil, "aucun ClickDetector dans Workspace : jeu injouable")
 
+	local ancestor = detector:FindFirstAncestorWhichIsA("BasePart")
+	assertTrue(ancestor ~= nil, "le ClickDetector n'est pas sur une part cliquable")
+end)
+
+test("il n'y a qu'un seul ClickDetector", function()
+	-- Le client prend le premier trouve. S'il y en avait deux, le clic
+	-- pourrait se brancher sur le mauvais objet selon l'ordre de
+	-- replication - un bug non deterministe, le pire a diagnostiquer.
+	local found = {}
+	for _, instance in workspace:GetDescendants() do
+		if instance:IsA("ClickDetector") then
+			table.insert(found, instance:GetFullName())
+		end
+	end
+
+	assertEquals(#found, 1, `ClickDetectors trouves : {table.concat(found, ", ")}`)
+end)
+
+test("la map a un spawn pose sur une surface", function()
 	local spawn = workspace:FindFirstChildWhichIsA("SpawnLocation", true)
 	assertTrue(spawn ~= nil, "aucun SpawnLocation : le joueur tomberait dans le vide")
+
+	-- Un spawn dans le vide fait tomber le joueur des la premiere seconde :
+	-- le pire premier ecran possible.
+	local origin = spawn.Position
+	local parameters = RaycastParams.new()
+	parameters.FilterType = Enum.RaycastFilterType.Exclude
+	parameters.FilterDescendantsInstances = { spawn }
+
+	local hit = workspace:Raycast(origin, Vector3.new(0, -20, 0), parameters)
+	assertTrue(hit ~= nil, "rien sous le SpawnLocation dans les 20 studs")
 end)
 
 test("toutes les parts de la map sont ancrees", function()

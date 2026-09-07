@@ -181,6 +181,17 @@ class ApiError(RuntimeError):
 
     def explain(self) -> str:
         """Traduit les codes les plus frequents en cause probable."""
+        if "unauthorized to create" in self.body:
+            # Piege classique : la cle appartient au compte createur, mais
+            # ROBLOX_CREATOR_USER_ID pointe vers un autre compte (celui sur
+            # lequel on joue, par exemple). Roblox nomme les deux userId dans
+            # son message, ce qui rend le diagnostic immediat.
+            return (
+                "ROBLOX_CREATOR_USER_ID ne correspond pas au compte "
+                "proprietaire de la cle API.\n"
+                "       -> mets l'userId du compte createur (le premier "
+                "cite dans le message ci-dessus), pas celui du compte de jeu"
+            )
         if self.is_scope_problem:
             return (
                 "scope manquant sur la cle (ou restriction IP active) - "
