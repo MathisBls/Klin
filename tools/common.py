@@ -11,6 +11,7 @@ from __future__ import annotations
 import json
 import os
 import random
+import shutil
 import sys
 import time
 import urllib.error
@@ -344,6 +345,27 @@ class OpenCloud:
 # --------------------------------------------------------------------------
 # Utilitaires partages
 # --------------------------------------------------------------------------
+
+def find_tool(name: str) -> str | None:
+    """Localise un binaire de la toolchain.
+
+    Regarde d'abord le PATH, puis le dossier ou Rokit depose ses alias.
+    Rokit n'ajoute `~/.rokit/bin` au PATH que via `rokit self-install`, et
+    seulement pour les terminaux ouverts ensuite. Sans ce repli, le pipeline
+    echoue en "rojo introuvable" sur une machine ou tout est pourtant bien
+    installe - et en CI, ou personne ne redemarre de terminal.
+    """
+    found = shutil.which(name)
+    if found:
+        return found
+
+    for directory in (Path.home() / ".rokit" / "bin",):
+        for candidate in (directory / name, directory / f"{name}.exe"):
+            if candidate.is_file():
+                return str(candidate)
+
+    return None
+
 
 def encode_multipart(
     fields: dict[str, str], files: dict[str, tuple[str, bytes, str]]

@@ -21,7 +21,6 @@ Usage :
 from __future__ import annotations
 
 import argparse
-import shutil
 import subprocess
 from pathlib import Path
 
@@ -33,12 +32,12 @@ PROJECT_FILE = common.ROOT / "default.project.json"
 
 def run_rojo_build(output: Path) -> None:
     """Construit le .rbxl. Echoue proprement si rojo n'est pas installe."""
-    rojo = shutil.which("rojo")
+    rojo = common.find_tool("rojo")
     if rojo is None:
         common.fail(
-            "rojo introuvable dans le PATH.\n"
-            "       -> installe la toolchain : rokit install\n"
-            "       -> si rokit manque : https://github.com/rojo-rbx/rokit"
+            "rojo introuvable, ni dans le PATH ni dans ~/.rokit/bin.\n"
+            "       -> installe la toolchain : python tools/klin.py install\n"
+            "       -> si rokit manque : winget install Rojo.Rokit"
         )
 
     output.parent.mkdir(parents=True, exist_ok=True)

@@ -16,6 +16,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+import common
+
 ROOT = Path(__file__).resolve().parent.parent
 BUILD = ROOT / "build" / "game.rbxl"
 PY = [sys.executable]
@@ -81,13 +83,22 @@ def show_help() -> int:
 
 def run(command: list[str]) -> int:
     """Execute une commande, avec un message clair si l'outil manque."""
-    if shutil.which(command[0]) is None and command[0] != sys.executable:
-        print(
-            f"[err]  '{command[0]}' introuvable dans le PATH.\n"
-            f"       -> lance d'abord : python tools/klin.py install",
-            file=sys.stderr,
-        )
-        return 127
+    if command[0] != sys.executable:
+        # find_tool retombe sur ~/.rokit/bin, que Rokit n'ajoute au PATH
+        # qu'apres `rokit self-install`, et seulement pour les terminaux
+        # ouverts ensuite. Sans ce repli, le pipeline echoue en "rojo
+        # introuvable" sur une machine ou tout est pourtant installe.
+        resolved = common.find_tool(command[0])
+        if resolved is None:
+            print(
+                f"[err]  '{command[0]}' introuvable, ni dans le PATH ni dans "
+                f"~/.rokit/bin.\n"
+                f"       -> lance d'abord : python tools/klin.py install",
+                file=sys.stderr,
+            )
+            return 127
+        command = [resolved] + command[1:]
+
     print(f"[run]  {' '.join(command)}", file=sys.stderr, flush=True)
     return subprocess.run(command, cwd=ROOT).returncode
 
